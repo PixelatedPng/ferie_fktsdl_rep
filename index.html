@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planning delle ferie </title>
+<style>
+/* =====================================================================
+   VARIABILI COLORE (CSS custom properties)
+   ===================================================================== */
+:root{
+  --f-color:#ffd54f;      /* F   = Ferie */
+  --cp-color:#90caf9;     /* Cp  = Congedo parentale */
+  --m-color:#ef9a9a;      /* M   = Malattia */
+  --l-color:#ffffff;      /* L   = Lavorativo sabato */
+  --104-color:#ce93d8;    /* 104 = Legge 104 */
+  --rh-color:#a5d6a7;     /* Rh  = Recupero ore */
+  --p-color:#ffcc80;      /* P   = Permesso */
+  --c-color:#80cbc4;      /* C   = Corso (giornata intera) */
+  --c-half-color:#b2dfdb; /* C½  = Corso (mezza giornata) */
+  --border:#ccc;
+  --header-bg:#37474f;
+  --header-fg:#fff;
+  --alert-yellow:#fff59d;
+  --alert-red:#ef9a9a;
+  box-sizing:border-box;
+}
+body{font-family:"Segoe UI",Arial,sans-serif;margin:0;background:#f4f6f8;color:#222;font-size:14px;}
+header{background:var(--header-bg);color:var(--header-fg);padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+header h1{font-size:18px;margin:0;margin-right:auto;}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px;background:#eceff1;border-bottom:1px solid var(--border);align-items:center;}
+button{cursor:pointer;border:1px solid #90a4ae;background:#fff;border-radius:4px;padding:6px 10px;font-size:13px;}
+button:hover{background:#e0e0e0;}
+button:focus-visible,
+td.daycell:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible{
+  outline:3px solid #ff9800;
+  outline-offset:2px;
+}
+button:disabled,
+button[aria-disabled="true"]{
+  cursor:not-allowed;
+  opacity:.55;
+  background:#eceff1;
+  color:#607d8b;
+  border-color:#b0bec5;
+}
+button:disabled:hover,
+button[aria-disabled="true"]:hover{background:#eceff1;}
+button.primary{background:#1565c0;color:#fff;border-color:#0d47a1;}
+button.primary:hover{background:#0d47a1;}
+button.warn{background:#c62828;color:#fff;border-color:#b71c1c;}
+button.warn:hover{background:#b71c1c;}
+button.is-active{background:#7c5cff;color:#fff;border-color:#5b3fd6;}
+.status-btn{width:44px;font-weight:bold;color:#000;}
+.status-F{background:var(--f-color);}
+.status-Cp{background:var(--cp-color);}
+.status-M{background:var(--m-color);}
+.status-C{background:var(--c-color);}
+.status-Chalf{background:var(--c-half-color);}
+.status-L{background:var(--l-color);}
+.status-104{background:var(--104-color);}
+.status-Rh{background:var(--rh-color);}
+.status-P{background:var(--p-color);}
+#syncbar{padding:6px 16px;font-size:12px;background:#e3f2fd;border-bottom:1px solid #bbdefb;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+#syncbar.ok{background:#e8f5e9;border-bottom-color:#a5d6a7;}
+#syncbar.err{background:#ffebee;border-bottom-color:#ef9a9a;}
+#syncbar.loading{background:#fff8e1;border-bottom-color:#ffe082;}
+#syncbar.info{background:#e3f2fd;border-bottom-color:#bbdefb;}
+#syncbar .status-group{display:inline-flex;align-items:center;gap:5px;}
+#syncbar .status-label{font-weight:bold;color:#37474f;}
+#syncbar .status-message{font-weight:normal;}
+#syncbar #data-updated{color:#607d8b;font-size:11px;}
+main{padding:10px 16px;overflow-x:auto;}
+table{border-collapse:collapse;width:100%;min-width:900px;}
+th,td{border:1px solid var(--border);text-align:center;padding:0;height:26px;font-size:12px;}
+th{background:#cfd8dc;position:sticky;top:0;z-index:2;}
+td.namecell, th.namecell{position:sticky;left:0;background:#eceff1;z-index:1;text-align:left;padding-left:6px;min-width:170px;font-size:13px;white-space:nowrap;}
+th.namecell{z-index:3;}
+td.daycell{width:26px;cursor:pointer;user-select:none;font-weight:bold;}
+td.daycell.is-locked{cursor:not-allowed !important;opacity:0.72;}
+td.daycell[aria-disabled="true"]{cursor:not-allowed;}
+td.weekend{background:#c2c2c2;}
+td.holiday{background:#d4d4d4;}
+td.selected{outline:2px solid #1565c0;outline-offset:-2px;}
+td.daycell.selected:focus-visible{outline:3px solid #ff9800;outline-offset:-3px;}
+td.status-F{background:var(--f-color);}
+td.status-Cp{background:var(--cp-color);}
+td.status-M{background:var(--m-color);}
+td.status-C{background:var(--c-color);}
+td.status-Chalf{background:var(--c-half-color);}
+td.status-L{background:var(--l-color);}
+td.status-104{background:var(--104-color);}
+td.status-Rh{background:var(--rh-color);}
+td.status-P{background:var(--p-color);}
+th.riepilogocell, td.riepilogocell{width:150px;min-width:150px;max-width:220px;font-weight:bold;background:#f5f5f5;text-align:left;padding:2px 6px;white-space:normal;font-size:11px;line-height:1.35;}
+td.riepilogocell .riep-item{display:inline-block;margin:0 4px 0 0;padding-left:2px;}
+td.riepilogocell .riep-empty{color:#999;font-weight:normal;}
+tr.group-row td{background:#37474f;color:#fff;font-weight:bold;text-align:left;padding-left:6px;position:sticky;left:0;}
+tr.spacer-row td{height:16px;background:#f4f6f8;border:none;}
+tr.absence-summary-row td{font-weight:bold;background:#e2e8f0;font-size:11px;}
+tr.absence-summary-row td.namecell{background:#cbd5e1;font-weight:bold;}
+td.alert-yellow{background-color:var(--alert-yellow) !important;}
+td.alert-red{background-color:var(--alert-red) !important;}
+.tag-badge{display:inline-block;padding:1px 4px;margin-left:4px;border-radius:3px;font-size:10px;font-weight:bold;background:#607d8b;color:#fff;}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:6px 16px;font-size:12px;background:#fafafa;border-bottom:1px solid var(--border);}
+.legend span{display:inline-flex;align-items:center;gap:4px;}
+.legend i{width:14px;height:14px;display:inline-block;border:1px solid #999;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:6px;padding:20px;width:min(520px, 90vw);max-width:90vw;box-sizing:border-box;}
+.modal h2{margin-top:0;font-size:16px;}
+.modal p{margin:0 0 10px;line-height:1.4;color:#555;font-size:12px;}
+.modal label{display:block;margin:10px 0 4px;font-size:13px;}
+.modal input, .modal select{width:100%;padding:6px;font-size:13px;box-sizing:border-box;}
+.modal .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}
+.modal .radiogroup label{display:flex;align-items:center;gap:6px;font-weight:normal;}
+#month-label{min-width:150px;text-align:center;font-weight:bold;}
+.month-lock-indicator{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;font-size:1rem;vertical-align:middle;min-width:1.2em;}
+footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
+
+#page-title{
+  padding:3px 3px;
+  text-align:center;
+  font-size:8px;
+  color:#607d8b;
+  background:#fafafa;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  margin:0;
+}
+
+#print-header{
+  display:none;
+}
+
+/* STILI STRUMENTI DI AMMINISTRAZIONE */
+#admin-section{margin:16px auto 10px;max-width:800px;border:1px solid var(--border);border-radius:5px;background:#fafafa;}
+#admin-section summary{cursor:pointer;font-weight:bold;padding:8px 12px;font-size:12px;color:#37474f;display:flex;justify-content:space-between;align-items:center;}
+#admin-section[aria-hidden="true"]{display:none;}
+#admin-section .admin-body{padding:10px;display:none;flex-direction:column;gap:8px;border-top:1px solid var(--border);}
+#admin-section[open] .admin-body{display:flex;}
+#admin-section .admin-body .admin-toolbar{display:flex;flex-wrap:wrap;gap:5px;}
+#admin-section .admin-body .admin-toolbar button{font-size:11px;padding:4px 7px;}
+#admin-section .admin-body label{display:flex;align-items:center;gap:6px;font-size:11px;}
+#admin-section .admin-body p{margin:0;font-size:10px;color:#607d8b;}
+.admin-status-badge{font-size:11px;padding:2px 6px;border-radius:3px;font-weight:normal;}
+
+#toast{position:fixed;bottom:20px;right:20px;background:#1db379;color:#fff;padding:10px 16px;border-radius:6px;font-size:11px;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+#toast.toast-info{background:#1976d2;}
+#toast.toast-success{background:#1db379;}
+#toast.toast-error{background:#c62828;}
+#toast[aria-hidden="true"]{visibility:hidden;}
+#toast.show{opacity:1;}
+#toast.toast-center{
+  left:50%;
+  right:auto;
+  bottom:auto;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-size:16px;
+  padding:18px 28px;
+  background:#c62828;
+}
+@media print{
+  @page{
+    size:A4 landscape;
+    margin:1cm;
+  }
+
+  header,
+  .toolbar,
+  #syncbar,
+  .legend,
+  footer,
+  #admin-section{
+    display:none !important;
+  }
+
+  body{
+    background:#fff;
+    font-size:9px;
+    margin:0;
+  }
+
+  main{
+    overflow:visible;
+    padding:0;
+    display:block;
+    width:100%;
+  }
+
+  table{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 auto;
+    table-layout:fixed !important;
+    page-break-inside:auto;
+    transform:none !important;
+    border-collapse:collapse !important;
+  }
+
+  thead{
+    display:table-header-group;
+  }
+
+  tr{
+    page-break-inside:avoid;
+    line-height:1 !important;
+  }
+
+  td,
+  th{
+    padding:0 !important;
+    line-height:1 !important;
+    vertical-align:middle !important;
+  }
+
+  td.daycell,
+  th:not(.namecell):not(.riepilogocell){
+    width:5% !important;
+    max-width:5% !important;
+    font-size:9px !important;
+    height:6px !important;
+  }
+
+  td.namecell,
+  th.namecell{
+    position:static;
+    width:23%;
+    min-width:0 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    word-break:normal !important;
+    overflow-wrap:normal !important;
+    font-size:9px !important;
+    line-height:80% !important;
+    height: 5px !important;
+    padding:0 1px !important;
+  }
+
+  th.riepilogocell,
+  td.riepilogocell{
+    width:18%;
+    min-width:0 !important;
+    max-width:none !important;
+    font-size:9px !important;
+    line-height:80% !important;
+    padding:0 1px !important;
+    align-items:center !important;
+  }
+
+  th{
+    position:static;
+    font-size:7px !important;
+  }
+
+  tr.group-row td{
+    position:static;
+    font-size:8px !important;
+    line-height:90% !important;
+    height:4px !important;
+    padding:0 1px !important;
+  }
+
+  td.riepilogocell .riep-item{
+    margin:0 1px 0 0;
+  }
+
+  tr.spacer-row td{
+    height:3px !important;
+    padding:0 !important;
+  }
+
+  tr.absence-summary-row td{
+    font-size:7px !important;
+    height:12px !important;
+    line-height:99% !important;
+  }
+
+  #page-title{
+    display:none !important;
+  }
+
+  #print-header{
+    display:block !important;
+    text-align:center;
+    font-size:12px;
+    font-weight: normal;
+    color:#000;
+    margin:0 0 10px 0;
+    padding:0;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="toast" role="alert" aria-live="assertive" aria-atomic="true" aria-hidden="true"></div>
+
+<header>
+  <h1>Planning Ferie e Assenze</h1>
+  <button id="btn-prev-month" aria-label="Mese precedente">&laquo;</button>
+  <span id="month-label"></span>
+  <span id="monthLockIndicator" class="month-lock-indicator" aria-live="polite" title="Mese sbloccato"></span>
+  <button id="btn-next-month" aria-label="Mese successivo">&raquo;</button>
+  <div id="syncbar">
+    <span class="status-group">
+      <span class="status-label">Sessione:</span>
+      <span id="auth-status" class="status-message" aria-live="polite">Sessione non verificata</span>
+    </span>
+    <span class="status-group">
+      <span class="status-label">Dati:</span>
+      <span id="data-status" class="status-message" aria-live="polite">In attesa di caricamento</span>
+      <span id="data-updated" aria-live="polite"></span>
+    </span>
+    <button id="btn-company-login" class="primary">Accedi con il tuo account</button>
+    <button id="btn-change-password" hidden aria-hidden="true">Cambia password</button>
+    <button id="btn-company-logout">Logout</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <span id="toolbar-help" role="status" aria-live="polite">Seleziona celle (click o trascina), poi assegna:</span>
+  <button class="status-btn status-F" data-code="F" title="Ferie" aria-label="Assegna ferie">F</button>
+  <button class="status-btn status-Cp" data-code="Cp" title="Congedo parentale" aria-label="Assegna congedo parentale">Cp</button>
+  <button class="status-btn status-M" data-code="M" title="Malattia" aria-label="Assegna malattia">M</button>
+  <button class="status-btn status-C" data-code="C" title="Corso" aria-label="Assegna corso">C</button>
+  <button class="status-btn status-Chalf" data-code="C½" title="Corso mezza giornata" aria-label="Assegna corso mezza giornata">C½</button>
+  <button class="status-btn status-L" data-code="L" title="Lavorativo sabato" aria-label="Assegna lavorativo sabato">L</button>
+  <button class="status-btn status-104" data-code="104" title="Legge 104" aria-label="Assegna legge 104">104</button>
+  <button class="status-btn status-Rh" data-code="Rh" title="Recupero ore" aria-label="Assegna recupero ore">Rh</button>
+  <button class="status-btn status-P" data-code="P" title="Permesso" aria-label="Assegna permesso">P</button>
+  <button id="btn-clear-cell" title="Cancella il codice dalle celle selezionate">Cancella</button>
+  <button id="btn-deselect">Annulla selezione</button>
+  <button id="btn-save-my-row" class="primary">Salva modifiche</button>
+</div>
+
+<div class="legend">
+  <span><i style="background:var(--f-color)"></i> F - Ferie</span>
+  <span><i style="background:var(--cp-color)"></i> Cp - Congedo parentale</span>
+  <span><i style="background:var(--m-color)"></i> M - Malattia</span>
+  <span><i style="background:var(--c-color)"></i> C - corso</span>
+  <span><i style="background:var(--c-half-color)"></i> C½ - corso mezza giornata</span>
+  <span><i style="background:var(--l-color)"></i> L - Lavorativo sabato</span>
+  <span><i style="background:var(--104-color)"></i> 104 - Legge 104</span>
+  <span><i style="background:var(--rh-color)"></i> Rh - Recupero ore</span>
+  <span><i style="background:var(--p-color)"></i> P - Permesso</span>
+  <span><i style="background:#f5f5f5"></i> Cancella - Elimina il dato inserito</span>
+  
+</div>
+
+<main>
+  <div id="print-header" aria-live="polite">Planning ferie - <span id="print-month-label"></span></div>
+  <table id="grid">
+    <thead><tr id="grid-head"></tr></thead>
+    <tbody id="grid-body"></tbody>
+  </table>
+</main>
+
+<footer>  .   .   .   . Have a good one :D </footer>
+
+<!-- ==================== STRUMENTI DI AMMINISTRAZIONE ==================== -->
+<details id="admin-section">
+  <summary id="admin-summary">
+    <span>Strumenti di amministrazione</span>
+    <span id="admin-status-badge" class="admin-status-badge">Ruolo: admin</span>
+  </summary>
+  <div class="admin-body">
+    <div class="admin-toolbar">
+      <button id="btn-add">Aggiungi terapista</button>
+      <button id="btn-rename">Modifica nome terapista</button>
+      <button id="btn-move">Sposta/Trasferisci</button>
+      <button id="btn-delete" class="warn">Elimina terapista</button>
+      <button id="btn-export">Esporta backup (.json)</button>
+      <button id="btn-import">Importa backup</button>
+      <input type="file" id="file-import" accept=".json" style="display:none">
+      <button id="btn-print">Stampa/PDF</button>
+      <button id="btn-parttime">Part Time e gestione etichette</button>
+      <button id="btn-absence-mgmt">Gestione Assenze</button>
+          <button id="btn-lock-month" aria-label="Blocca o sblocca il mese">Blocco mese</button>
+    </div>
+    <p>La sincronizzazione dei dati sara gestita dal backend autenticato.</p>
+  </div>
+</details>
+
+<div id="page-title">Planning delle ferie in VibeCoding 2.2.0P - ©PixelatedPng//@DaveFt__</div>
+
+<!-- ==================== MODAL: AGGIUNGI TERAPISTA ==================== -->
+<div class="modal-overlay" id="modal-add" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-add-title">
+    <h2 id="modal-add-title">Aggiungi terapista</h2>
+    <label>Nome e cognome</label>
+    <input type="text" id="add-name">
+    <label>Gruppo</label>
+    <select id="add-reparto">
+      <option value="Coordinatore">Coordinatore</option>
+      <option value="USI-RRF">USI-RRF</option>
+      <option value="Pneumologia-Infettive">Pneumologia-Infettive</option>
+      <option value="Riab. Orto">Riab. Orto</option>
+    </select>
+    <label>Etichetta</label>
+    <select id="add-tag">
+      <option value="">Nessuna (Full Time 100%)</option>
+      <option value="PT50">PT50 - Part Time 50%</option>
+      <option value="PT66">PT66 - Part Time 66%</option>
+      <option value="PT83">PT83 - Part Time 83%</option>
+      <option value="Tec">Tec - Tecnico (non conteggiato)</option>
+    </select>
+    <div class="actions">
+      <button id="add-cancel">Annulla</button>
+      <button id="add-confirm" class="primary">Aggiungi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: MODIFICA NOME TERAPISTA ==================== -->
+<div class="modal-overlay" id="modal-rename" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-rename-title">
+    <h2 id="modal-rename-title">Modifica nome terapista</h2>
+    <label>Terapista</label>
+    <select id="rename-therapist"></select>
+    <label>Nuovo nome e cognome</label>
+    <input type="text" id="rename-name">
+    <div class="actions">
+      <button id="rename-cancel">Annulla</button>
+      <button id="rename-confirm" class="primary">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: SPOSTA/TRASFERISCI TERAPISTA ==================== -->
+<div class="modal-overlay" id="modal-move" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-move-title">
+    <h2 id="modal-move-title">Sposta/Trasferisci terapista</h2>
+    <label>Terapista</label>
+    <select id="move-therapist"></select>
+    <label>Nuovo gruppo</label>
+    <select id="move-reparto">
+      <option value="Coordinatore">Coordinatore</option>
+      <option value="USI-RRF">USI-RRF</option>
+      <option value="Pneumologia-Infettive">Pneumologia-Infettive</option>
+      <option value="Riab. Orto">Riab. Orto</option>
+    </select>
+    <label>Periodo dello spostamento</label>
+    <div class="radiogroup">
+      <label><input type="radio" name="move-period" value="month" checked> Solo il mese visualizzato</label>
+      <label><input type="radio" name="move-period" value="forward"> Da questo mese in poi</label>
+      <label><input type="radio" name="move-period" value="before"> Tutti i mesi precedenti a questo</label>
+      <label><input type="radio" name="move-period" value="all"> Definitivo in tutto lo storico</label>
+    </div>
+    <div class="actions">
+      <button id="move-cancel">Annulla</button>
+      <button id="move-confirm" class="primary">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: ELIMINA TERAPISTA ==================== -->
+<div class="modal-overlay" id="modal-delete" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-delete-title">
+    <h2 id="modal-delete-title">Elimina terapista</h2>
+    <label>Terapista</label>
+    <select id="delete-therapist"></select>
+    <p style="color:#c62828;font-size:13px;">Attenzione: verranno eliminati anche tutti i dati di ferie/assenze associati.</p>
+    <div class="actions">
+      <button id="delete-cancel">Annulla</button>
+      <button id="delete-confirm" class="warn">Elimina</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: PART TIME E GESTIONE ETICHETTE ==================== -->
+<div class="modal-overlay" id="modal-parttime" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-parttime-title">
+    <h2 id="modal-parttime-title">Part Time e gestione etichette</h2>
+    <label>Terapista</label>
+    <select id="parttime-therapist"></select>
+    <label>Assegna Etichetta/Qualifica</label>
+    <select id="parttime-tag">
+      <option value="">Nessuna etichetta (Full Time 100%)</option>
+      <option value="PT50">PT50 - Conta 0,5 nelle assenze</option>
+      <option value="PT66">PT66 - Conta 0,5 nelle assenze</option>
+      <option value="PT83">PT83 - Conta 0,83 nelle assenze</option>
+      <option value="Tec">Tec - Escluso dalle assenze</option>
+    </select>
+    <div class="actions">
+      <button id="parttime-cancel">Annulla</button>
+      <button id="parttime-confirm" class="primary">Salva Etichetta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: GESTIONE ASSENZE / SOGLIE ALLERTA ==================== -->
+<div class="modal-overlay" id="modal-absence" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-absence-title">
+    <h2 id="modal-absence-title">Gestione Assenze - Soglie Allerta</h2>
+    <p style="font-size:11px;color:#555;margin-top:0;">Imposta le soglie numeriche giornaliere (es. 1.5). Verranno applicate per evidenziare le celle in giallo o rosso.</p>
+    <fieldset style="border:1px solid #ccc;border-radius:4px;margin-bottom:10px;padding:8px;">
+      <legend style="font-weight:bold;font-size:12px;">USI-RRF</legend>
+      <label>Allerta Gialla <input type="number" step="0.01" id="alert-usi-yellow"></label>
+      <label>Allerta Rossa <input type="number" step="0.01" id="alert-usi-red"></label>
+    </fieldset>
+    <fieldset style="border:1px solid #ccc;border-radius:4px;margin-bottom:10px;padding:8px;">
+      <legend style="font-weight:bold;font-size:12px;">Riab. Orto</legend>
+      <label>Allerta Gialla <input type="number" step="0.01" id="alert-orto-yellow"></label>
+      <label>Allerta Rossa <input type="number" step="0.01" id="alert-orto-red"></label>
+    </fieldset>
+    <fieldset style="border:1px solid #ccc;border-radius:4px;margin-bottom:10px;padding:8px;">
+      <legend style="font-weight:bold;font-size:12px;">Assenze Complessive (Totale)</legend>
+      <label>Allerta Gialla <input type="number" step="0.01" id="alert-total-yellow"></label>
+      <label>Allerta Rossa <input type="number" step="0.01" id="alert-total-red"></label>
+    </fieldset>
+    <div class="actions">
+      <button id="absence-cancel">Annulla</button>
+      <button id="absence-confirm" class="primary">Salva Soglie</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: LOGIN AZIENDALE ==================== -->
+<div class="modal-overlay" id="modal-company-login" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-company-login-title">
+    <h2 id="modal-company-login-title">Accedi con il tuo account</h2>
+    <form id="company-login-form">
+      <label for="company-login-username">Username</label>
+      <input type="text" id="company-login-username" name="username" autocomplete="username" required>
+      <label for="company-login-password">Password</label>
+      <input type="password" id="company-login-password" name="password" autocomplete="current-password" required>
+      <p id="company-login-error" role="alert" aria-live="polite"></p>
+      <div class="actions">
+        <button type="button" id="company-login-cancel">Annulla</button>
+        <button type="submit" id="company-login-submit" class="primary">Accedi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL: CAMBIO PASSWORD ==================== -->
+<div class="modal-overlay" id="modal-change-password" hidden aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-change-password-title">
+    <h2 id="modal-change-password-title">Cambia password</h2>
+    <form id="change-password-form">
+      <label for="change-password-current">Password attuale</label>
+      <input type="password" id="change-password-current" autocomplete="current-password" required>
+      <label for="change-password-new">Nuova password</label>
+      <input type="password" id="change-password-new" autocomplete="new-password" required>
+      <label for="change-password-confirm">Conferma nuova password</label>
+      <input type="password" id="change-password-confirm" autocomplete="new-password" required>
+      <p id="change-password-message" role="status" aria-live="polite"></p>
+      <div class="actions">
+        <button type="button" id="change-password-cancel">Annulla</button>
+        <button type="submit" id="change-password-submit" class="primary">Salva nuova password</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const DEFAULT_DATA = {
+  therapists: [],
+  repartoOverrides: {},
+  entries: {},
+  absenceLimits: {
+    usi: { yellow: 1.5, red: 2.5 },
+    orto: { yellow: 1.5, red: 2.5 },
+    total: { yellow: 3.0, red: 5.0 }
+  },
+  monthLocks: {}
+};
+
+const appState = {
+  session: {
+    status: "unknown",
+    role: "guest",
+    user: null,
+    permissions: {
+      viewPrivateData: false,
+      editOwnRow: false,
+      editAllRows: false
+    }
+  },
+  data: DEFAULT_DATA,
+  monthlyAggregates: null,
+  personalSummary: {},
+  ui: {
+    currentDate: new Date(),
+    selection: new Set(),
+    dragMode: null,
+    dirty: false,
+    syncStatus: "non configurato"
+  }
+};
+
+let data = appState.data;
+if (!data.absenceLimits) data.absenceLimits = DEFAULT_DATA.absenceLimits;
+if (!data.monthLocks) data.monthLocks = {};
+
+let currentDate = appState.ui.currentDate;
+currentDate.setDate(1);
+let selection = appState.ui.selection;
+let dragMode = appState.ui.dragMode;
+let dirty = appState.ui.dirty;
+let changedCellKeys = new Set();
+let authLoading = false;
+
+function getPersonalYearF(payload){
+  if (!payload || typeof payload !== "object") return undefined;
+  const summary = payload.summary && typeof payload.summary === "object" ? payload.summary : null;
+  const yearSummary = payload.yearSummary && typeof payload.yearSummary === "object" ? payload.yearSummary : null;
+  const yearF = summary && summary.yearF !== undefined ? summary.yearF
+    : yearSummary && yearSummary.f !== undefined ? yearSummary.f : undefined;
+  const numericYearF = Number(yearF);
+  return Number.isFinite(numericYearF) ? numericYearF : undefined;
+}
+
+function setSession(sessionPayload){
+  const payload = sessionPayload || {};
+  const status = ["unknown", "guest", "authenticated"].includes(payload.status)
+    ? payload.status : "unknown";
+  const role = ["guest", "user", "admin"].includes(payload.role)
+    ? payload.role : "guest";
+  const user = payload.user && typeof payload.user === "object"
+    ? {
+      id: payload.user.id,
+      displayName: payload.user.displayName,
+      therapistId: payload.user.therapistId
+    } : null;
+
+  appState.session = {
+    status: status,
+    role: status === "authenticated" ? role : "guest",
+    user: status === "authenticated" ? user : null,
+    permissions: {
+      viewPrivateData: status === "authenticated" && role !== "guest",
+      editOwnRow: status === "authenticated" && (role === "user" || role === "admin"),
+      editAllRows: status === "authenticated" && role === "admin"
+    }
+  };
+  selection.clear();
+  dragMode = null;
+  updateSessionVisibility();
+  renderGrid();
+}
+
+function clearSession(){
+  setSession({ status: "guest", role: "guest", user: null });
+}
+
+function hasConfirmedSession(){
+  return appState.session.status === "authenticated";
+}
+
+function canViewPrivateData(){ return appState.session.permissions.viewPrivateData; }
+function canEditOwnRow(therapistId){
+  return appState.session.permissions.editOwnRow && (
+    canEditAllRows() || appState.session.user && appState.session.user.therapistId === therapistId
+  );
+}
+function canEditAllRows(){ return appState.session.permissions.editAllRows; }
+function canUseAdminTools(){
+  return hasConfirmedSession() && appState.session.role === "admin";
+}
+function isPersonalUserMode(){
+  return appState.session.role === "user" && !canEditAllRows();
+}
+function getSessionTherapist(){
+  if (!isPersonalUserMode() || !appState.session.user) return null;
+  return data.therapists.find(t => t.id === appState.session.user.therapistId) || null;
+}
+
+function canInteractWithCell(tid, dateKey){
+  if (!tid || !/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return false;
+  if (appState.session.role === "admin") return true;
+  if (appState.session.role !== "user") return false;
+  return canEditOwnRow(tid);
+}
+
+function updateSessionVisibility(){
+  const canViewPlanning = canViewPrivateData();
+  const canViewGuestSummary = appState.session.status === "guest";
+  const isAdmin = canUseAdminTools();
+  document.getElementById("admin-status-badge").textContent = "Ruolo: " + appState.session.role;
+  const setHidden = (element, hidden) => {
+    element.hidden = hidden;
+    element.setAttribute("aria-hidden", String(hidden));
+  };
+  setHidden(document.querySelector(".toolbar"), !(canViewPlanning || canViewGuestSummary));
+  setHidden(document.querySelector(".legend"), !canViewPlanning);
+  setHidden(document.getElementById("syncbar"), false);
+  setHidden(document.getElementById("admin-section"), !isAdmin);
+  setHidden(document.getElementById("btn-prev-month"), !(canViewPlanning || canViewGuestSummary));
+  setHidden(document.getElementById("btn-next-month"), !(canViewPlanning || canViewGuestSummary));
+  setHidden(document.getElementById("month-label"), !(canViewPlanning || canViewGuestSummary));
+  setHidden(document.getElementById("monthLockIndicator"), !(canViewPlanning || canViewGuestSummary));
+  setHidden(document.querySelector("footer"), !canViewPlanning);
+  setHidden(document.getElementById("page-title"), !canViewPlanning);
+  document.querySelectorAll("#admin-section .admin-toolbar button").forEach(btn => {
+    btn.disabled = !isAdmin;
+  });
+  document.getElementById("file-import").disabled = !isAdmin;
+  if (!isAdmin){
+    document.getElementById("admin-section").open = false;
+    ["modal-add", "modal-rename", "modal-move", "modal-delete", "modal-parttime", "modal-absence"]
+      .forEach(hideModal);
+  }
+  updateAuthControls();
+}
+
+function updateAuthControls(){
+  const loginButton = document.getElementById("btn-company-login");
+  const changePasswordButton = document.getElementById("btn-change-password");
+  const logoutButton = document.getElementById("btn-company-logout");
+  const isAuthenticated = appState.session.status === "authenticated";
+  loginButton.disabled = authLoading || isAuthenticated;
+  changePasswordButton.hidden = !isAuthenticated;
+  changePasswordButton.setAttribute("aria-hidden", String(!isAuthenticated));
+  changePasswordButton.disabled = authLoading;
+  logoutButton.disabled = authLoading || !isAuthenticated;
+  if (authLoading){
+    updateAuthStatus("Verifica autenticazione in corso...", "loading");
+  } else if (isAuthenticated){
+    updateAuthStatus("Autenticato", "ok");
+  } else if (appState.session.status === "guest"){
+    updateAuthStatus("Modalità guest - Accedi per vedere i tuoi dati personali", "info");
+  } else {
+    updateAuthStatus("Sessione non verificata", "info");
+  }
+  updateCellActionControls();
+}
+
+function updateCellActionControls(){
+  const ym = ymKey(currentDate);
+  const role = appState.session.role;
+  const toolbarHelp = document.getElementById("toolbar-help");
+  const roleHelp = role === "guest"
+    ? "Modalità guest: accedi per assegnare o modificare i codici."
+    : role === "user"
+      ? "Seleziona celle della tua riga, poi assegna o modifica i codici."
+      : "Seleziona celle, poi assegna o modifica i codici.";
+  const canEditSelection = selection.size > 0
+    && !isMonthLocked(ym)
+    && Array.from(selection).some((selKey) => {
+      const separatorIndex = selKey.lastIndexOf("_");
+      if (separatorIndex === -1) return false;
+      return canInteractWithCell(selKey.slice(0, separatorIndex), selKey.slice(separatorIndex + 1));
+    });
+  const editDisabledReason = role === "guest"
+    ? "Accedi per assegnare o modificare i codici."
+    : selection.size === 0
+      ? "Seleziona almeno una cella modificabile."
+      : isMonthLocked(ym)
+        ? "Le modifiche sono bloccate per questo mese."
+        : role === "user"
+          ? "Puoi modificare solo la tua riga."
+          : "Nessuna cella modificabile selezionata.";
+  toolbarHelp.textContent = canEditSelection ? roleHelp : roleHelp + " " + editDisabledReason;
+  document.querySelectorAll(".status-btn").forEach(btn => {
+    const disabled = !canEditSelection;
+    if (!btn.dataset.baseTitle) btn.dataset.baseTitle = btn.title;
+    btn.disabled = disabled;
+    btn.setAttribute("aria-disabled", String(disabled));
+    btn.title = disabled ? editDisabledReason : btn.dataset.baseTitle;
+  });
+  const clearButton = document.getElementById("btn-clear-cell");
+  const clearDisabled = !canEditSelection;
+  clearButton.disabled = clearDisabled;
+  clearButton.setAttribute("aria-disabled", String(clearDisabled));
+  clearButton.title = clearDisabled ? editDisabledReason : "Cancella il codice dalle celle selezionate";
+  const deselectButton = document.getElementById("btn-deselect");
+  deselectButton.disabled = selection.size === 0;
+  deselectButton.setAttribute("aria-disabled", String(deselectButton.disabled));
+  const saveButton = document.getElementById("btn-save-my-row");
+  saveButton.hidden = !(isPersonalUserMode() || canUseAdminTools());
+  saveButton.disabled = !dirty || changedCellKeys.size === 0;
+  saveButton.setAttribute("aria-disabled", String(saveButton.disabled));
+}
+
+function getVisibleTherapists(){
+  if (canEditAllRows()) return data.therapists.slice();
+  if (isPersonalUserMode() && getSessionTherapist()){
+    return [getSessionTherapist()];
+  }
+  return [];
+}
+
+function markCellChanged(tid, dateKey){ changedCellKeys.add(tid + "_" + dateKey); }
+function markDirty(){
+  dirty = true;
+  appState.ui.dirty = true;
+  updateDataStatus("Modifiche in attesa del backend", "loading");
+}
+
+function pad2(n){ return n.toString().padStart(2, "0"); }
+function ymKey(d){ return d.getFullYear() + "-" + pad2(d.getMonth()+1); }
+function ymdKey(d){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
+function daysInMonth(d){ return new Date(d.getFullYear(), d.getMonth()+1, 0).getDate(); }
+
+const MONTH_NAMES = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+const DAY_LETTERS = ["D","L","M","M","G","V","S"];
+const GROUP_ORDER = ["Coordinatore","USI-RRF","Pneumologia-Infettive","Riab. Orto"];
+const ALL_CODES = ["F","Cp","M","104","Rh","P","L","C","C½"];
+const ABSENCE_CODES = ALL_CODES.filter(c => c !== "L");
+
+function countYearF(therapistId, year) {
+  let totalF = 0;
+  if (!data.entries[therapistId]) return 0;
+  for (const [dateKey, code] of Object.entries(data.entries[therapistId])) {
+    if (code === "F" && dateKey.startsWith(year + "-")) totalF++;
+  }
+  return totalF;
+}
+
+function easterSunday(year){
+  const a = year % 19, b = Math.floor(year/100), c = year % 100;
+  const d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
+  const g = Math.floor((b-f+1)/3), h = (19*a + b - d - g + 15) % 30;
+  const i = Math.floor(c/4), k = c % 4, l = (32 + 2*e + 2*i - h - k) % 7;
+  const m = Math.floor((a + 11*h + 22*l)/451);
+  const month = Math.floor((h + l - 7*m + 114)/31);
+  const day = ((h + l - 7*m + 114) % 31) + 1;
+  return new Date(year, month-1, day);
+}
+
+function isNationalHoliday(dt){
+  const y = dt.getFullYear(), m = dt.getMonth()+1, d = dt.getDate();
+  const fixed = [[1,1],[1,6],[4,25],[5,1],[6,2],[8,15],[11,1],[12,8],[12,25],[12,26]];
+  if (fixed.some(([fm,fd]) => fm===m && fd===d)) return true;
+  const easterMonday = new Date(easterSunday(y));
+  easterMonday.setDate(easterMonday.getDate()+1);
+  if (dt.getFullYear()===easterMonday.getFullYear() && dt.getMonth()===easterMonday.getMonth() && dt.getDate()===easterMonday.getDate()) return true;
+  return false;
+}
+function isJune19(dt){ return dt.getMonth()===5 && dt.getDate()===19; }
+function isWeekendDay(dt){ const wd = dt.getDay(); return wd===0 || wd===6; }
+function isSaturday(dt){ return dt.getDay()===6; }
+function isSpecialExcluded(dt){ return isNationalHoliday(dt) || isJune19(dt); }
+function isWorkingDayForCodes(dt){ return !isWeekendDay(dt) && !isSpecialExcluded(dt); }
+function isSaturdayAllowedForL(dt){ return isSaturday(dt) && !isSpecialExcluded(dt); }
+
+function repartoForMonth(therapistId, ym){
+  const ov = data.repartoOverrides[therapistId];
+  if (ov && ov[ym] !== undefined) return ov[ym];
+  const t = data.therapists.find(x => x.id === therapistId);
+  return t ? t.baseReparto : "Altro";
+}
+function genId(){ return "t" + Date.now() + Math.floor(Math.random()*1000); }
+
+/* =====================================================================
+   ======================  BLOCCO MESE  ================================
+   ===================================================================== */
+function isMonthLocked(ym){
+  return !!data.monthLocks[ym];
+}
+function toggleMonthLock(){
+  const ym = ymKey(currentDate);
+  // TODO backend: sostituire con endpoint dedicato al blocco mese.
+  void submitAdminAction("toggle-month-lock", { monthKey: ym, locked: !isMonthLocked(ym) });
+}
+
+function updateMonthLabels(){
+  const currentMonthLabel = MONTH_NAMES[currentDate.getMonth()] + " " + currentDate.getFullYear();
+  document.getElementById("month-label").textContent = currentMonthLabel;
+  document.getElementById("print-month-label").textContent = currentMonthLabel;
+}
+
+/* =====================================================================
+   ==========================  RENDER GRIGLIA  ============================
+   ===================================================================== */
+function renderGrid(){
+  updateSessionVisibility();
+  const sessionRole = appState.session.role;
+  const head = document.getElementById("grid-head");
+  const body = document.getElementById("grid-body");
+  head.replaceChildren();
+  body.replaceChildren();
+  if (appState.session.status === "unknown"){
+    const trLoading = document.createElement("tr");
+    const tdLoading = document.createElement("td");
+    tdLoading.colSpan = 1;
+    tdLoading.textContent = "Caricamento sessione...";
+    trLoading.appendChild(tdLoading);
+    body.appendChild(trLoading);
+    return;
+  }
+
+  const ym = ymKey(currentDate);
+  const locked = isMonthLocked(ym);
+  updateMonthLabels();
+  const lockIndicator = document.getElementById("monthLockIndicator");
+  if (locked){
+    lockIndicator.textContent = "🔒";
+    lockIndicator.title = "Mese bloccato: le modifiche non sono consentite";
+  } else {
+    lockIndicator.textContent = "";
+    lockIndicator.title = "Mese sbloccato";
+  }
+
+  const lockBtn = document.getElementById("btn-lock-month");
+  if (lockBtn){
+    lockBtn.textContent = locked ? "🔓 Sblocca mese" : "🔒 Blocco mese";
+    lockBtn.classList.toggle("is-active", locked);
+  }
+
+  const nDays = daysInMonth(currentDate);
+
+  const thName = document.createElement("th");
+  thName.className = "namecell";
+  thName.textContent = "Terapista / Gruppo";
+  head.appendChild(thName);
+  for (let d=1; d<=nDays; d++){
+    const dt = new Date(currentDate.getFullYear(), currentDate.getMonth(), d);
+    const th = document.createElement("th");
+    const dayLetter = document.createElement("span");
+    dayLetter.style.fontWeight = "normal";
+    dayLetter.textContent = DAY_LETTERS[dt.getDay()];
+    th.textContent = String(d);
+    th.append(document.createElement("br"), dayLetter);
+    head.appendChild(th);
+  }
+  const thRiep = document.createElement("th");
+  thRiep.className = "riepilogocell";
+  thRiep.textContent = "Riepilogo";
+  head.appendChild(thRiep);
+
+  const nCols = nDays + 2;
+
+  const sorted = getVisibleTherapists().sort((a,b) => {
+    const ga = GROUP_ORDER.indexOf(repartoForMonth(a.id, ym));
+    const gb = GROUP_ORDER.indexOf(repartoForMonth(b.id, ym));
+    const ia = ga === -1 ? GROUP_ORDER.length : ga;
+    const ib = gb === -1 ? GROUP_ORDER.length : gb;
+    if (ia !== ib) return ia - ib;
+    return a.name.localeCompare(b.name);
+  });
+
+  const dailySumUSI = new Array(nDays+1).fill(0);
+  const dailySumOrto = new Array(nDays+1).fill(0);
+
+  for (const t of data.therapists){
+    const grp = repartoForMonth(t.id, ym) || "Altro";
+    let weight = 1.0;
+    if (t.tag === "PT50" || t.tag === "PT66") weight = 0.5;
+    else if (t.tag === "PT83") weight = 0.83;
+    else if (t.tag === "Tec") weight = 0.0;
+    for (let d=1; d<=nDays; d++){
+      const key = ymdKey(new Date(currentDate.getFullYear(), currentDate.getMonth(), d));
+      const code = data.entries[t.id] ? data.entries[t.id][key] : undefined;
+      if (!code || !ABSENCE_CODES.includes(code)) continue;
+      const dayValue = code === "C½" ? 0.5 : weight;
+      if (grp === "USI-RRF" || grp === "Pneumologia-Infettive") dailySumUSI[d] += dayValue;
+      else if (grp === "Riab. Orto") dailySumOrto[d] += dayValue;
+    }
+  }
+
+  if (isPersonalUserMode() && appState.monthlyAggregates){
+    const globalAggregates = appState.monthlyAggregates;
+    for (let d=1; d<=nDays; d++){
+      dailySumUSI[d] = Number(globalAggregates.usi && globalAggregates.usi[d-1]) || 0;
+      dailySumOrto[d] = Number(globalAggregates.orto && globalAggregates.orto[d-1]) || 0;
+    }
+  }
+
+  if (isPersonalUserMode() && !getSessionTherapist()){
+    const trMessage = document.createElement("tr");
+    const tdMessage = document.createElement("td");
+    tdMessage.colSpan = nCols;
+    tdMessage.textContent = "Il tuo profilo non è associato a una riga del planning. Le modifiche sono disabilitate.";
+    trMessage.appendChild(tdMessage);
+    body.appendChild(trMessage);
+  }
+
+  let lastGroup = null;
+  if (canViewPrivateData()) for (const t of sorted){
+    const grp = repartoForMonth(t.id, ym) || "Altro";
+    if (grp !== lastGroup){
+      const trGroup = document.createElement("tr");
+      trGroup.className = "group-row";
+      const tdGroup = document.createElement("td");
+      tdGroup.colSpan = nCols;
+      tdGroup.textContent = grp;
+      trGroup.appendChild(tdGroup);
+      body.appendChild(trGroup);
+      lastGroup = grp;
+    }
+
+    const tr = document.createElement("tr");
+    const tdName = document.createElement("td");
+    tdName.className = "namecell";
+    const name = document.createElement("strong");
+    name.textContent = t.name;
+    tdName.appendChild(name);
+    if (t.tag){
+      const badge = document.createElement("span");
+      badge.className = "tag-badge";
+      badge.textContent = t.tag;
+      tdName.appendChild(badge);
+    }
+    tr.appendChild(tdName);
+
+    let countF = 0;
+    let rowHasSelection = false;
+
+    let weight = 1.0;
+    if (t.tag === "PT50") weight = 0.5;
+    else if (t.tag === "PT66") weight = 0.5;
+    else if (t.tag === "PT83") weight = 0.83;
+    else if (t.tag === "Tec") weight = 0.0;
+
+    for (let d=1; d<=nDays; d++){
+      const dt = new Date(currentDate.getFullYear(), currentDate.getMonth(), d);
+      const key = ymdKey(dt);
+      const td = document.createElement("td");
+      td.className = "daycell";
+      if (isWeekendDay(dt)) td.classList.add("weekend");
+      if (isSpecialExcluded(dt)) td.classList.add("holiday");
+      if (locked) td.classList.add("is-locked");
+
+      const code = data.entries[t.id] ? data.entries[t.id][key] : undefined;
+      if (code){
+        const cssSuffix = (code === "C½") ? "Chalf" : code;
+        td.classList.add("status-" + cssSuffix);
+        td.textContent = code;
+        if (code === "F") countF++;
+
+        if (ABSENCE_CODES.includes(code)){
+          const dayValue = (code === "C½") ? 0.5 : weight;
+        }
+      }
+
+      td.dataset.tid = t.id;
+      td.dataset.date = key;
+      const selKey = t.id + "_" + key;
+      const canEditCell = !locked && canInteractWithCell(t.id, key);
+      td.tabIndex = canEditCell ? 0 : -1;
+      td.setAttribute("aria-selected", String(selection.has(selKey)));
+      td.setAttribute("aria-disabled", String(!canEditCell));
+      td.setAttribute("aria-label", t.name + ", " + key + (code ? ", " + code : ", vuota"));
+      if (selection.has(selKey)){ td.classList.add("selected"); rowHasSelection = true; }
+
+      if (!canEditOwnRow(t.id)) td.classList.add("is-locked");
+      td.addEventListener("mousedown", (e) => {
+        if (e.button !== 0) return;
+        if (locked || !canInteractWithCell(t.id, key)) return;
+        e.preventDefault();
+
+        dragMode = selection.has(selKey) ? "deselect" : "select";
+
+        if (dragMode === "select") {
+          selection.add(selKey);
+        } else {
+          selection.delete(selKey);
+        }
+
+        renderGrid();
+      });
+
+      td.addEventListener("keydown", (e) => {
+        if ((e.key !== "Enter" && e.key !== " ") || !canEditCell) return;
+        e.preventDefault();
+        if (selection.has(selKey)) selection.delete(selKey);
+        else selection.add(selKey);
+        renderGrid();
+      });
+
+      td.addEventListener("mouseenter", () => {
+        if (!dragMode || !canInteractWithCell(t.id, key)) return;
+
+        if (dragMode === "select" && !selection.has(selKey)) {
+          selection.add(selKey);
+          renderGrid();
+        } else if (dragMode === "deselect" && selection.has(selKey)) {
+          selection.delete(selKey);
+          renderGrid();
+        }
+      });
+
+      tr.appendChild(td);
+    }
+    if (rowHasSelection) tdName.classList.add("selected");
+
+    const tdRiep = document.createElement("td");
+    tdRiep.className = "riepilogocell";
+    const yearF = isPersonalUserMode() && appState.personalSummary.yearF !== undefined
+      ? appState.personalSummary.yearF
+      : countYearF(t.id, currentDate.getFullYear());
+    const parts = [];
+    if (countF > 0) parts.push("F mese: " + countF + " - ");
+    if (yearF > 0) parts.push("F anno: " + yearF);
+    if (parts.length){
+      for (const part of parts){
+        const item = document.createElement("span");
+        item.className = "riep-item";
+        item.textContent = part;
+        tdRiep.appendChild(item);
+      }
+    } else {
+      const empty = document.createElement("span");
+      empty.className = "riep-empty";
+      empty.textContent = "-";
+      tdRiep.appendChild(empty);
+    }
+tr.appendChild(tdRiep);
+
+    body.appendChild(tr);
+  }
+
+  const trSpacer = document.createElement("tr");
+  trSpacer.className = "spacer-row";
+  const tdSpacer = document.createElement("td");
+  tdSpacer.colSpan = nCols;
+  trSpacer.appendChild(tdSpacer);
+  body.appendChild(trSpacer);
+
+  const limits = data.absenceLimits || { usi:{}, orto:{}, total:{} };
+  renderAbsenceRow(body, "Assenze USI-RRF", dailySumUSI, nDays, limits.usi);
+  renderAbsenceRow(body, "Assenze Riab. Orto", dailySumOrto, nDays, limits.orto);
+
+  const dailySumTotal = new Array(nDays+1).fill(0);
+  for (let d=1; d<=nDays; d++) dailySumTotal[d] = dailySumUSI[d] + dailySumOrto[d];
+  renderAbsenceRow(body, "Assenze Complessive", dailySumTotal, nDays, limits.total);
+  updateCellActionControls();
+}
+
+function renderAbsenceRow(body, title, sums, nDays, groupLimits){
+  const tr = document.createElement("tr");
+  tr.className = "absence-summary-row";
+  const tdName = document.createElement("td");
+  tdName.className = "namecell";
+  tdName.textContent = title;
+  tr.appendChild(tdName);
+
+  groupLimits = groupLimits || {};
+  const yLim = groupLimits.yellow !== undefined ? groupLimits.yellow : null;
+  const rLim = groupLimits.red !== undefined ? groupLimits.red : null;
+
+  for (let d=1; d<=nDays; d++){
+    const td = document.createElement("td");
+    const val = sums[d];
+    const formattedVal = Number(val).toFixed(1);
+    td.textContent = val > 0  ? (Number.isInteger(val) ? String(val) : formattedVal)
+    : "";
+    if (rLim !== null && val >= parseFloat(rLim)) td.classList.add("alert-red");
+    else if (yLim !== null && val >= parseFloat(yLim)) td.classList.add("alert-yellow");
+    tr.appendChild(td);
+  }
+
+  const tdRiep = document.createElement("td");
+  tdRiep.className = "riepilogocell";
+  tdRiep.textContent = "";
+  tr.appendChild(tdRiep);
+
+  body.appendChild(tr);
+}
+
+document.addEventListener("mouseup", () => { dragMode = null; });
+
+document.querySelectorAll(".status-btn").forEach(btn => {
+  btn.addEventListener("click", () => applyCodeToSelection(btn.dataset.code));
+});
+document.getElementById("btn-clear-cell").addEventListener("click", () => applyCodeToSelection(null));
+document.getElementById("btn-deselect").addEventListener("click", () => { selection.clear(); renderGrid(); });
+
+function applyCodeToSelection(code){
+  if (!appState.session.permissions.editOwnRow || (isPersonalUserMode() && !getSessionTherapist())){
+    showToast("Sessione non autorizzata alla modifica", "error", 2500, true);
+    return;
+  }
+  const ym = ymKey(currentDate);
+  if (isMonthLocked(ym)){
+    showToast("Modifiche bloccate per questo mese", "error", 4000, true);
+    return;
+  }
+
+  if (selection.size === 0){ alert("Seleziona prima una o più celle."); return; }
+  let skipped = 0;
+  let changed = 0;
+  for (const selKey of selection){
+    const separatorIndex = selKey.lastIndexOf("_");
+    const tid = separatorIndex === -1 ? "" : selKey.slice(0, separatorIndex);
+    const dateKey = separatorIndex === -1 ? "" : selKey.slice(separatorIndex + 1);
+    const therapistExists = data.therapists.some(t => t.id === tid);
+    if (!therapistExists || !canInteractWithCell(tid, dateKey)){
+      skipped++;
+      continue;
+    }
+    if (code === null){
+      if (data.entries[tid]) delete data.entries[tid][dateKey];
+      markCellChanged(tid, dateKey);
+      changed++;
+      continue;
+    }
+    const [yy, mm, dd] = dateKey.split("-").map(Number);
+    const dt = new Date(yy, mm-1, dd);
+    let allowed = false;
+    if (code === "L") allowed = isSaturdayAllowedForL(dt);
+    else if (ABSENCE_CODES.includes(code)) allowed = isWorkingDayForCodes(dt);
+    if (!allowed){ skipped++; continue; }
+    if (!data.entries[tid]) data.entries[tid] = {};
+    data.entries[tid][dateKey] = code;
+    markCellChanged(tid, dateKey);
+    changed++;
+  }
+  if (changed > 0) markDirty();
+  selection.clear();
+  renderGrid();
+  if (skipped > 0){
+    const message = code === null
+      ? "Alcune celle non appartengono alla tua riga e non sono state modificate."
+      : "Codice '" + code + "' non consentito in " + skipped + " cella/e (riga o giorno non valido).";
+    showToast(message, "info", 3000, true);
+  }
+}
+
+let toastTimeoutId = null;
+function showToast(message, type, duration, centered){
+  const allowedTypes = ["info", "success", "error"];
+  type = allowedTypes.includes(type) ? type : "info";
+  duration = duration || 1500;
+  const toastEl = document.getElementById("toast");
+  toastEl.textContent = message;
+  toastEl.classList.remove("toast-info", "toast-success", "toast-error");
+  toastEl.classList.add("toast-" + type);
+  toastEl.setAttribute("aria-hidden", "false");
+  toastEl.classList.toggle("toast-center", !!centered);
+  toastEl.classList.add("show");
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
+  toastTimeoutId = setTimeout(() => {
+    toastEl.classList.remove("show");
+    toastEl.setAttribute("aria-hidden", "true");
+  }, duration);
+}
+
+document.getElementById("btn-save-my-row").addEventListener("click", () => {
+  void saveChanges(changedCellKeys);
+});
+
+document.getElementById("btn-prev-month").addEventListener("click", () => {
+  currentDate.setMonth(currentDate.getMonth()-1);
+  selection.clear();
+  renderGrid();
+  void refreshCurrentView();
+});
+document.getElementById("btn-next-month").addEventListener("click", () => {
+  currentDate.setMonth(currentDate.getMonth()+1);
+  selection.clear();
+  renderGrid();
+  void refreshCurrentView();
+});
+
+document.getElementById("btn-lock-month").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  const ym = ymKey(currentDate);
+  const willLock = !isMonthLocked(ym);
+  const label = MONTH_NAMES[currentDate.getMonth()] + " " + currentDate.getFullYear();
+  const question = willLock
+    ? "Bloccare le modifiche per " + label + "?"
+    : "Sbloccare le modifiche per " + label + "?";
+  if (confirm(question)) toggleMonthLock();
+});
+
+function showModal(id){
+  const modal = document.getElementById(id);
+  modal.hidden = false;
+  modal.setAttribute("aria-hidden", "false");
+  modal.classList.add("show");
+}
+function hideModal(id){
+  const modal = document.getElementById(id);
+  modal.classList.remove("show");
+  modal.hidden = true;
+  modal.setAttribute("aria-hidden", "true");
+}
+async function submitAdminAction(action, payload){
+  if (!canUseAdminTools()) return;
+  try {
+    await apiClient.postAdminCalendar(action, payload || {});
+    updateDataStatus("Azione admin salvata", "ok");
+    dirty = false;
+    appState.ui.dirty = false;
+    await refreshCurrentView();
+    return true;
+  } catch (error){
+    handleApiError(error, "Azione admin");
+    return false;
+  }
+}
+
+document.getElementById("btn-add").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  document.getElementById("add-name").value = "";
+  document.getElementById("add-reparto").value = "";
+  document.getElementById("add-tag").value = "";
+  showModal("modal-add");
+});
+document.getElementById("add-cancel").addEventListener("click", () => hideModal("modal-add"));
+document.getElementById("add-confirm").addEventListener("click", async () => {
+  if (!canUseAdminTools()) return;
+  const name = document.getElementById("add-name").value.trim();
+  const reparto = document.getElementById("add-reparto").value;
+  const tag = document.getElementById("add-tag").value;
+  if (!name){ alert("Inserisci il nome."); return; }
+  // TODO backend: sostituire con endpoint dedicato alla creazione terapista.
+  const saved = await submitAdminAction("add-therapist", { therapist: { id: genId(), name: name, baseReparto: reparto, tag: tag || undefined } });
+  if (saved) hideModal("modal-add");
+});
+
+document.getElementById("btn-rename").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  if (data.therapists.length === 0){ alert("Nessun terapista presente."); return; }
+  fillTherapistSelects();
+  const first = data.therapists.slice().sort((a,b) => a.name.localeCompare(b.name))[0];
+  document.getElementById("rename-name").value = first ? first.name : "";
+  showModal("modal-rename");
+});
+document.getElementById("rename-therapist").addEventListener("change", (e) => {
+  const t = data.therapists.find(x => x.id === e.target.value);
+  document.getElementById("rename-name").value = t ? t.name : "";
+});
+document.getElementById("rename-cancel").addEventListener("click", () => hideModal("modal-rename"));
+document.getElementById("rename-confirm").addEventListener("click", async () => {
+  if (!canUseAdminTools()) return;
+  const tid = document.getElementById("rename-therapist").value;
+  const newName = document.getElementById("rename-name").value.trim();
+  if (!newName){ alert("Inserisci il nuovo nome."); return; }
+  const t = data.therapists.find(x => x.id === tid);
+  if (!t) return;
+  // TODO backend: sostituire con endpoint dedicato alla rinomina terapista.
+  const saved = await submitAdminAction("rename-therapist", { therapistId: tid, name: newName });
+  if (saved) hideModal("modal-rename");
+});
+
+function fillTherapistSelects(){
+  const therapists = data.therapists.slice().sort((a,b) => a.name.localeCompare(b.name));
+  const selectIds = ["move-therapist", "delete-therapist", "rename-therapist", "parttime-therapist"];
+  for (const selectId of selectIds){
+    populateSelect(
+      document.getElementById(selectId),
+      therapists,
+      therapist => therapist.id,
+      therapist => therapist.name + (therapist.tag ? " (" + therapist.tag + ")" : "")
+    );
+  }
+}
+
+function populateSelect(selectEl, items, getValue, getLabel, includeEmptyOption = false){
+  const options = document.createDocumentFragment();
+  if (includeEmptyOption){
+    options.appendChild(document.createElement("option"));
+  }
+  for (const item of items){
+    const option = document.createElement("option");
+    option.value = getValue(item);
+    option.textContent = getLabel(item);
+    options.appendChild(option);
+  }
+  selectEl.replaceChildren(options);
+}
+
+document.getElementById("btn-move").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  if (data.therapists.length === 0){ alert("Nessun terapista presente."); return; }
+  fillTherapistSelects();
+  document.getElementById("move-reparto").value = "Coordinatore";
+  showModal("modal-move");
+});
+document.getElementById("move-cancel").addEventListener("click", () => hideModal("modal-move"));
+document.getElementById("move-confirm").addEventListener("click", async () => {
+  if (!canUseAdminTools()) return;
+  const tid = document.getElementById("move-therapist").value;
+  const newReparto = document.getElementById("move-reparto").value;
+  const period = document.querySelector("input[name='move-period']:checked").value;
+  const t = data.therapists.find(x => x.id === tid);
+  if (!t) return;
+  // TODO backend: sostituire con endpoint dedicato al trasferimento terapista.
+  const saved = await submitAdminAction("move-therapist", { therapistId: tid, reparto: newReparto, period: period, monthKey: ymKey(currentDate) });
+  if (saved) hideModal("modal-move");
+});
+
+document.getElementById("btn-delete").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  if (data.therapists.length === 0){ alert("Nessun terapista presente."); return; }
+  fillTherapistSelects();
+  showModal("modal-delete");
+});
+document.getElementById("delete-cancel").addEventListener("click", () => hideModal("modal-delete"));
+document.getElementById("delete-confirm").addEventListener("click", async () => {
+  if (!canUseAdminTools()) return;
+  const tid = document.getElementById("delete-therapist").value;
+  const t = data.therapists.find(x => x.id === tid);
+  if (!t) return;
+  if (!confirm("Confermi eliminazione di '" + t.name + "'? Questa azione rimuove anche tutti i dati di ferie/assenze associati.")) return;
+  // TODO backend: sostituire con endpoint dedicato all'eliminazione terapista.
+  const saved = await submitAdminAction("delete-therapist", { therapistId: tid });
+  if (saved) hideModal("modal-delete");
+});
+
+document.getElementById("btn-parttime").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  if (data.therapists.length === 0){ alert("Nessun terapista presente."); return; }
+  fillTherapistSelects();
+  const firstTid = document.getElementById("parttime-therapist").value;
+  const t = data.therapists.find(x => x.id === firstTid);
+  document.getElementById("parttime-tag").value = t && t.tag ? t.tag : "";
+  showModal("modal-parttime");
+});
+document.getElementById("parttime-therapist").addEventListener("change", (e) => {
+  const t = data.therapists.find(x => x.id === e.target.value);
+  document.getElementById("parttime-tag").value = t && t.tag ? t.tag : "";
+});
+document.getElementById("parttime-cancel").addEventListener("click", () => hideModal("modal-parttime"));
+document.getElementById("parttime-confirm").addEventListener("click", async () => {
+  if (!canUseAdminTools()) return;
+  const tid = document.getElementById("parttime-therapist").value;
+  const tagVal = document.getElementById("parttime-tag").value;
+  // TODO backend: sostituire con endpoint dedicato alle etichette terapista.
+  const saved = await submitAdminAction("update-therapist-tag", { therapistId: tid, tag: tagVal || null });
+  if (saved) hideModal("modal-parttime");
+});
+
+document.getElementById("btn-absence-mgmt").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  const lim = data.absenceLimits || { usi:{}, orto:{}, total:{} };
+  document.getElementById("alert-usi-yellow").value = lim.usi.yellow !== undefined ? lim.usi.yellow : "";
+  document.getElementById("alert-usi-red").value = lim.usi.red !== undefined ? lim.usi.red : "";
+  document.getElementById("alert-orto-yellow").value = lim.orto.yellow !== undefined ? lim.orto.yellow : "";
+  document.getElementById("alert-orto-red").value = lim.orto.red !== undefined ? lim.orto.red : "";
+  document.getElementById("alert-total-yellow").value = lim.total.yellow !== undefined ? lim.total.yellow : "";
+  document.getElementById("alert-total-red").value = lim.total.red !== undefined ? lim.total.red : "";
+  showModal("modal-absence");
+});
+document.getElementById("absence-cancel").addEventListener("click", () => hideModal("modal-absence"));
+document.getElementById("absence-confirm").addEventListener("click", async () => {
+  if (!canUseAdminTools()) return;
+  const absenceLimits = {
+    usi: {
+      yellow: document.getElementById("alert-usi-yellow").value !== "" ? parseFloat(document.getElementById("alert-usi-yellow").value) : undefined,
+      red:    document.getElementById("alert-usi-red").value    !== "" ? parseFloat(document.getElementById("alert-usi-red").value)    : undefined
+    },
+    orto: {
+      yellow: document.getElementById("alert-orto-yellow").value !== "" ? parseFloat(document.getElementById("alert-orto-yellow").value) : undefined,
+      red:    document.getElementById("alert-orto-red").value    !== "" ? parseFloat(document.getElementById("alert-orto-red").value)    : undefined
+    },
+    total: {
+      yellow: document.getElementById("alert-total-yellow").value !== "" ? parseFloat(document.getElementById("alert-total-yellow").value) : undefined,
+      red:    document.getElementById("alert-total-red").value    !== "" ? parseFloat(document.getElementById("alert-total-red").value)    : undefined
+    }
+  };
+  // TODO backend: sostituire con endpoint dedicato ai limiti assenze.
+  const saved = await submitAdminAction("update-absence-limits", { absenceLimits: absenceLimits });
+  if (saved) hideModal("modal-absence");
+});
+
+document.getElementById("btn-export").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "planning_ferie_export_" + ymdKey(new Date()) + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("btn-import").addEventListener("click", () => {
+  if (!canUseAdminTools()) return;
+  document.getElementById("file-import").click();
+});
+document.getElementById("file-import").addEventListener("change", (e) => {
+  if (!canUseAdminTools()){
+    e.target.value = "";
+    return;
+  }
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      if (!imported.therapists || !imported.entries) throw new Error("formato non valido");
+      if (!confirm("Importare questo file? I dati attuali locali verranno sovrascritti.")) return;
+      // TODO backend: sostituire con endpoint dedicato all'importazione del backup.
+      await submitAdminAction("import-backup", { data: imported });
+    } catch(err){
+      alert("File non valido: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+document.getElementById("btn-print").addEventListener("click", () => window.print());
+
+/* =====================================================================
+   SINCRONIZZAZIONE BACKEND
+   ===================================================================== */
+class ApiError extends Error{
+  constructor(message, status, details){
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.details = details;
+  }
+}
+
+async function parseApiJson(response){
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) return null;
+  try {
+    return await response.json();
+  } catch (error){
+    return null;
+  }
+}
+
+const API_BASE_URL = "http://127.0.0.1:4000";
+
+const apiClient = {
+  async request(path, options){
+    const requestOptions = Object.assign({}, options || {}, { credentials: "include" });
+    if (requestOptions.body && typeof requestOptions.body !== "string"){
+      requestOptions.headers = Object.assign({ "Content-Type": "application/json" }, requestOptions.headers || {});
+      requestOptions.body = JSON.stringify(requestOptions.body);
+    }
+
+    let response;
+    try {
+      response = await fetch(`${API_BASE_URL}${path}`, requestOptions);
+    } catch (error){
+      throw new ApiError("Backend non raggiungibile", 0, error);
+    }
+
+    const payload = await parseApiJson(response);
+    if (response.ok) return payload;
+
+    const messages = {
+      401: "Autenticazione richiesta",
+      403: "Operazione non autorizzata",
+      500: "Errore interno del backend"
+    };
+    const message = messages[response.status] || "Errore API";
+    throw new ApiError(message, response.status, payload);
+  },
+
+  getSession(){
+    return this.request("/session", { method: "GET" });
+  },
+
+  login(payload){
+    return this.request("/auth/login", { method: "POST", body: payload });
+  },
+
+  changePassword(payload){
+    return this.request("/auth/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: {
+        currentPassword: payload.currentPassword,
+        newPassword: payload.newPassword,
+        confirmPassword: payload.confirmPassword
+      }
+    });
+  },
+
+  logout(){
+    return this.request("/auth/logout", { method: "POST" });
+  },
+
+  getCalendar(monthKey){
+    return this.request("/calendar?monthKey=" + encodeURIComponent(monthKey), { method: "GET" });
+  },
+
+  getMyRow(monthKey){
+    return this.request("/my-row?monthKey=" + encodeURIComponent(monthKey), { method: "GET" });
+  },
+
+  saveMyRow(payload){
+    return this.request("/my-row", { method: "PATCH", body: payload });
+  },
+
+  getAdminCalendar(monthKey){
+    return this.request("/admin/calendar?monthKey=" + encodeURIComponent(monthKey), { method: "GET" });
+  },
+
+  postAdminCalendar(action, payload){
+    return this.request("/admin/calendar", {
+      method: "POST",
+      body: { action: action, payload: payload || {} }
+    });
+  },
+
+  patchMyRow(payload){
+    return this.saveMyRow(payload);
+  },
+
+  postAdminAction(action, payload){
+    return this.postAdminCalendar(action, payload);
+  }
+};
+
+function handleApiError(err, context){
+  const prefix = context ? context + ": " : "";
+  let message = prefix + "errore inatteso";
+  if (err instanceof ApiError){
+    if (err.status === 401){
+      clearSession();
+      message = prefix + "sessione richiesta";
+      updateAuthStatus(message, "err");
+    } else if (err.status === 403){
+      message = prefix + "operazione non autorizzata";
+      updateDataStatus(message, "err");
+    } else if (err.status === 500){
+      message = prefix + "errore del backend";
+      updateDataStatus(message, "err");
+    } else {
+      message = prefix + String(err.message || "errore API");
+      updateDataStatus(message, "err");
+    }
+    showToast(message, "error", 4000, true);
+    return;
+  }
+  updateDataStatus(message, "err");
+  showToast(message, "error", 4000, true);
+}
+
+function updateStatus(message, type){
+  const bar = document.getElementById("syncbar");
+  bar.classList.remove("info","ok","err","loading");
+  bar.classList.add(type || "info");
+}
+
+function updateAuthStatus(message, type){
+  document.getElementById("auth-status").textContent = message;
+  updateStatus(message, type);
+}
+
+function updateDataStatus(message, type){
+  document.getElementById("data-status").textContent = message;
+  if (type === "ok" && message.toLowerCase().includes("caricat")){
+    document.getElementById("data-updated").textContent = "Ultimo aggiornamento: " + new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  }
+  appState.ui.syncStatus = message;
+  updateStatus(message, type);
+}
+
+function storeLoadedCalendarPayload(payload){
+  // Il backend deve restituire un payload gia autorizzato e nel modello della vista.
+  if (!payload || typeof payload !== "object") return payload;
+  const calendarData = payload.data && typeof payload.data === "object"
+    ? payload.data : payload;
+  if (!Array.isArray(calendarData.therapists) || !calendarData.entries) return payload;
+
+  appState.data = calendarData;
+  data = appState.data;
+  if (!data.repartoOverrides) data.repartoOverrides = {};
+  if (!data.absenceLimits) data.absenceLimits = DEFAULT_DATA.absenceLimits;
+  if (!data.monthLocks) data.monthLocks = {};
+  selection.clear();
+  changedCellKeys.clear();
+  renderGrid();
+  return payload;
+}
+
+function storeUserCalendarPayload(calendarPayload, rowPayload){
+  appState.monthlyAggregates = calendarPayload && calendarPayload.aggregates
+    && typeof calendarPayload.aggregates === "object"
+    ? calendarPayload.aggregates : null;
+  appState.personalSummary = {
+    yearF: getPersonalYearF(rowPayload)
+  };
+  storeLoadedCalendarPayload(rowPayload);
+}
+
+async function loadGuestCalendar(monthKey){
+  appState.monthlyAggregates = null;
+  appState.personalSummary = {};
+  const payload = await apiClient.getCalendar(monthKey);
+  return storeLoadedCalendarPayload(payload);
+}
+
+async function loadUserCalendar(monthKey){
+  const [calendarPayload, rowPayload] = await Promise.all([
+    apiClient.getCalendar(monthKey),
+    apiClient.getMyRow(monthKey)
+  ]);
+  storeUserCalendarPayload(calendarPayload, rowPayload);
+  return rowPayload;
+}
+
+async function loadAdminCalendar(monthKey){
+  appState.monthlyAggregates = null;
+  appState.personalSummary = {};
+  const payload = await apiClient.getAdminCalendar(monthKey);
+  return storeLoadedCalendarPayload(payload);
+}
+
+async function refreshCurrentView(){
+  updateDataStatus("Caricamento dati in corso...", "loading");
+  const monthKey = ymKey(currentDate);
+  const loaderByRole = {
+    guest: loadGuestCalendar,
+    user: loadUserCalendar,
+    admin: loadAdminCalendar
+  };
+  const loader = loaderByRole[appState.session.role] || loadGuestCalendar;
+  try {
+    const payload = await loader(monthKey);
+    if (payload){
+      updateDataStatus("Dati caricati", "ok");
+      showToast("Dati caricati", "success");
+    }
+    return payload;
+  } catch (error){
+    handleApiError(error, "Caricamento dati");
+    return null;
+  }
+}
+
+async function loadFromBackend(){
+  return refreshCurrentView();
+}
+
+function normalizeMyRowChanges(changes){
+  const therapistId = appState.session.user && appState.session.user.therapistId;
+  const monthKey = ymKey(currentDate);
+  const source = changes instanceof Set ? Array.from(changes)
+    : Array.isArray(changes) ? changes : Object.keys(changes || {});
+  const normalized = [];
+
+  for (const change of source){
+    const raw = typeof change === "string" ? { key: change } : (change || {});
+    let tid = raw.therapistId;
+    let dateKey = raw.dateKey || raw.date;
+    if (raw.key){
+      const separatorIndex = raw.key.lastIndexOf("_");
+      if (separatorIndex === -1) continue;
+      tid = raw.key.slice(0, separatorIndex);
+      dateKey = raw.key.slice(separatorIndex + 1);
+    }
+    if (!therapistId || tid !== therapistId || !/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) continue;
+    if (!dateKey.startsWith(monthKey + "-")) continue;
+
+    const code = Object.prototype.hasOwnProperty.call(raw, "code")
+      ? raw.code : data.entries[therapistId] && data.entries[therapistId][dateKey];
+    if (code !== null && code !== undefined && !ALL_CODES.includes(code)) continue;
+    if (code && code !== "L" && !isWorkingDayForCodes(new Date(dateKey + "T00:00:00"))) continue;
+    if (code === "L" && !isSaturdayAllowedForL(new Date(dateKey + "T00:00:00"))) continue;
+    normalized.push({ date: dateKey, code: code || null });
+  }
+
+  const unique = new Map(normalized.map(change => [change.date, change]));
+  return { monthKey: monthKey, changes: Array.from(unique.values()) };
+}
+
+function normalizeAdminChanges(changes){
+  const monthKey = ymKey(currentDate);
+  const source = changes instanceof Set ? Array.from(changes)
+    : Array.isArray(changes) ? changes : Object.keys(changes || {});
+  const normalized = [];
+
+  for (const change of source){
+    const separatorIndex = typeof change === "string" ? change.lastIndexOf("_") : -1;
+    if (separatorIndex === -1) continue;
+    const therapistId = change.slice(0, separatorIndex);
+    const dateKey = change.slice(separatorIndex + 1);
+    const code = data.entries[therapistId] && data.entries[therapistId][dateKey];
+    if (!data.therapists.some(therapist => therapist.id === therapistId)
+      || !dateKey.startsWith(monthKey + "-")
+      || !/^\d{4}-\d{2}-\d{2}$/.test(dateKey)
+      || (code !== undefined && !ALL_CODES.includes(code))) continue;
+    normalized.push({ therapistId: therapistId, date: dateKey, code: code || null });
+  }
+
+  const unique = new Map(normalized.map(change => [change.therapistId + "_" + change.date, change]));
+  return { monthKey: monthKey, changes: Array.from(unique.values()) };
+}
+
+async function saveChanges(changes){
+  if (canUseAdminTools()) return saveAdminChanges(changes);
+  return saveMyRowChanges(changes);
+}
+
+async function saveMyRowChanges(changes){
+  if (!isPersonalUserMode() || !appState.session.user){
+    showToast("Salvataggio disponibile solo per la propria riga.", "error", 3000, true);
+    return false;
+  }
+  const therapistId = appState.session.user.therapistId;
+  const payload = normalizeMyRowChanges(changes);
+  if (payload.changes.length === 0){
+    showToast("Non ci sono modifiche valide da salvare.", "info", 3000, true);
+    return false;
+  }
+
+  try {
+    await apiClient.saveMyRow(payload);
+    for (const change of payload.changes) changedCellKeys.delete(therapistId + "_" + change.date);
+    dirty = changedCellKeys.size > 0;
+    appState.ui.dirty = dirty;
+    updateDataStatus("Dati aggiornati", "ok");
+    showToast("Salvataggio completato", "success");
+    await refreshCurrentView();
+    return true;
+  } catch (error){
+    handleApiError(error, "Salvataggio della propria riga");
+    return false;
+  }
+}
+
+async function saveAdminChanges(changes){
+  if (!canUseAdminTools()) return false;
+  const payload = normalizeAdminChanges(changes);
+  if (payload.changes.length === 0){
+    showToast("Non ci sono modifiche valide da salvare.", "info", 3000, true);
+    return false;
+  }
+
+  try {
+    await apiClient.postAdminCalendar("save-changes", payload);
+    for (const change of payload.changes) changedCellKeys.delete(change.therapistId + "_" + change.date);
+    dirty = changedCellKeys.size > 0;
+    appState.ui.dirty = dirty;
+    updateDataStatus("Dati aggiornati", "ok");
+    showToast("Salvataggio completato", "success");
+    await refreshCurrentView();
+    return true;
+  } catch (error){
+    handleApiError(error, "Salvataggio admin");
+    return false;
+  }
+}
+
+async function fetchSession(){
+  authLoading = true;
+  updateAuthControls();
+  try {
+    const sessionPayload = await apiClient.getSession();
+    setSession(sessionPayload);
+    await refreshCurrentView();
+    return sessionPayload;
+  } catch (error){
+    clearSession();
+    if (error instanceof ApiError && error.status !== 401){
+      handleApiError(error, "Verifica sessione");
+    } else {
+      updateAuthStatus("Sessione guest", "ok");
+    }
+    await refreshCurrentView();
+    return null;
+  } finally {
+    authLoading = false;
+    updateAuthControls();
+    renderGrid();
+  }
+}
+
+async function beginCompanyLogin(){
+  const modal = document.getElementById("modal-company-login");
+  const usernameInput = document.getElementById("company-login-username");
+  const errorMessage = document.getElementById("company-login-error");
+  errorMessage.textContent = "";
+  modal.hidden = false;
+  modal.setAttribute("aria-hidden", "false");
+  modal.classList.add("show");
+  usernameInput.focus();
+}
+
+function closeCompanyLogin(){
+  hideModal("modal-company-login");
+  document.getElementById("company-login-error").textContent = "";
+  document.getElementById("company-login-password").value = "";
+}
+
+async function submitCompanyLogin(event){
+  event.preventDefault();
+  const usernameInput = document.getElementById("company-login-username");
+  const passwordInput = document.getElementById("company-login-password");
+  const cancelButton = document.getElementById("company-login-cancel");
+  const submitButton = document.getElementById("company-login-submit");
+  const errorMessage = document.getElementById("company-login-error");
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!username || !password){
+    errorMessage.textContent = "Inserisci username e password.";
+    (!username ? usernameInput : passwordInput).focus();
+    return;
+  }
+
+  cancelButton.disabled = true;
+  submitButton.disabled = true;
+  errorMessage.textContent = "";
+  authLoading = true;
+  updateAuthControls();
+  try {
+    await apiClient.login({ username: username, password: password });
+    closeCompanyLogin();
+    await fetchSession();
+    await refreshCurrentView();
+    showToast("Accesso effettuato", "success");
+  } catch (error){
+    errorMessage.textContent = error instanceof ApiError
+      ? error.message
+      : "Accesso non riuscito. Riprova.";
+  } finally {
+    authLoading = false;
+    cancelButton.disabled = false;
+    submitButton.disabled = false;
+    updateAuthControls();
+  }
+}
+
+async function logoutCompanyAccount(){
+  authLoading = true;
+  let logoutSucceeded = false;
+  updateAuthControls();
+  try {
+    await apiClient.logout();
+    logoutSucceeded = true;
+  } catch (error){
+    handleApiError(error, "Logout");
+  } finally {
+    await fetchSession();
+    await refreshCurrentView();
+    if (logoutSucceeded) showToast("Logout completato", "success");
+    authLoading = false;
+    renderGrid();
+  }
+}
+
+function openChangePasswordModal(){
+  if (appState.session.status !== "authenticated") return;
+  const message = document.getElementById("change-password-message");
+  message.textContent = "";
+  showModal("modal-change-password");
+  document.getElementById("change-password-current").focus();
+}
+
+function closeChangePasswordModal(){
+  hideModal("modal-change-password");
+  document.getElementById("change-password-form").reset();
+  document.getElementById("change-password-message").textContent = "";
+}
+
+async function submitChangePassword(event){
+  event.preventDefault();
+  const currentPassword = document.getElementById("change-password-current").value;
+  const newPassword = document.getElementById("change-password-new").value;
+  const confirmPassword = document.getElementById("change-password-confirm").value;
+  const message = document.getElementById("change-password-message");
+  const cancelButton = document.getElementById("change-password-cancel");
+  const submitButton = document.getElementById("change-password-submit");
+
+  if (!currentPassword || !newPassword || !confirmPassword){
+    message.textContent = "Compila tutti i campi.";
+    return;
+  }
+  if (newPassword !== confirmPassword){
+    message.textContent = "Le nuove password non coincidono.";
+    return;
+  }
+
+  cancelButton.disabled = true;
+  submitButton.disabled = true;
+  message.textContent = "Salvataggio in corso...";
+  try {
+    await apiClient.changePassword({ currentPassword, newPassword, confirmPassword });
+    closeChangePasswordModal();
+    await fetchSession();
+    await refreshCurrentView();
+    showToast("Password cambiata. Effettua nuovamente il login.", "success", 5000, true);
+  } catch (error){
+    message.textContent = error instanceof ApiError && error.details && error.details.error
+      ? error.details.error : "Cambio password non riuscito. Riprova.";
+  } finally {
+    cancelButton.disabled = false;
+    submitButton.disabled = false;
+  }
+}
+
+document.getElementById("btn-company-login").addEventListener("click", beginCompanyLogin);
+document.getElementById("btn-change-password").addEventListener("click", openChangePasswordModal);
+document.getElementById("btn-company-logout").addEventListener("click", logoutCompanyAccount);
+document.getElementById("company-login-form").addEventListener("submit", submitCompanyLogin);
+document.getElementById("company-login-cancel").addEventListener("click", closeCompanyLogin);
+document.getElementById("change-password-form").addEventListener("submit", submitChangePassword);
+document.getElementById("change-password-cancel").addEventListener("click", closeChangePasswordModal);
+
+function initApp(){
+  updateAuthControls();
+  updateAuthStatus("Verifica sessione in corso...", "loading");
+  updateDataStatus("In attesa della sessione", "info");
+  fetchSession();
+}
+
+window.addEventListener("load", initApp);
+</script>
+</body>
+</html>
