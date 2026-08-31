@@ -162,7 +162,13 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
   transform:translate(-50%,-50%);
   font-size:16px;
   padding:18px 28px;
+  background:#1db379;
+}
+#toast.toast-error.toast-center{
   background:#c62828;
+}
+#toast.toast-info.toast-center{
+  background:#1db379;
 }
 @media print{
   @page{
@@ -600,8 +606,9 @@ let data = appState.data;
 if (!data.absenceLimits) data.absenceLimits = DEFAULT_DATA.absenceLimits;
 if (!data.monthLocks) data.monthLocks = {};
 
+const now = new Date();
+appState.ui.currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
 let currentDate = appState.ui.currentDate;
-currentDate.setDate(1);
 let selection = appState.ui.selection;
 let dragMode = appState.ui.dragMode;
 let dirty = appState.ui.dirty;
@@ -1217,10 +1224,20 @@ function applyCodeToSelection(code){
 }
 
 let toastTimeoutId = null;
+function hideToast(){
+  const toastEl = document.getElementById("toast");
+  if (toastTimeoutId) {
+    clearTimeout(toastTimeoutId);
+    toastTimeoutId = null;
+  }
+  toastEl.classList.remove("show");
+  toastEl.setAttribute("aria-hidden", "true");
+}
+
 function showToast(message, type, duration, centered){
   const allowedTypes = ["info", "success", "error"];
   type = allowedTypes.includes(type) ? type : "info";
-  duration = duration || 1500;
+  duration = Number.isFinite(duration) ? duration : 1500;
   const toastEl = document.getElementById("toast");
   toastEl.textContent = message;
   toastEl.classList.remove("toast-info", "toast-success", "toast-error");
@@ -1229,10 +1246,14 @@ function showToast(message, type, duration, centered){
   toastEl.classList.toggle("toast-center", !!centered);
   toastEl.classList.add("show");
   if (toastTimeoutId) clearTimeout(toastTimeoutId);
-  toastTimeoutId = setTimeout(() => {
-    toastEl.classList.remove("show");
-    toastEl.setAttribute("aria-hidden", "true");
-  }, duration);
+  toastTimeoutId = null;
+  if (duration > 0){
+    toastTimeoutId = setTimeout(() => {
+      toastEl.classList.remove("show");
+      toastEl.setAttribute("aria-hidden", "true");
+      toastTimeoutId = null;
+    }, duration);
+  }
 }
 
 document.getElementById("btn-save-my-row").addEventListener("click", () => {
@@ -1698,6 +1719,7 @@ async function loadAdminCalendar(monthKey){
 
 async function refreshCurrentView(){
   updateDataStatus("Caricamento dati in corso...", "loading");
+  showToast("In attesa del caricamento dal server", "success", 0, true);
   const monthKey = ymKey(currentDate);
   const loaderByRole = {
     guest: loadGuestCalendar,
@@ -1707,12 +1729,14 @@ async function refreshCurrentView(){
   const loader = loaderByRole[appState.session.role] || loadGuestCalendar;
   try {
     const payload = await loader(monthKey);
+    hideToast();
     if (payload){
       updateDataStatus("Dati caricati", "ok");
       showToast("Dati caricati", "success");
     }
     return payload;
   } catch (error){
+    hideToast();
     handleApiError(error, "Caricamento dati");
     return null;
   }
@@ -1794,8 +1818,10 @@ async function saveMyRowChanges(changes){
     return false;
   }
 
+  showToast("Salvataggio in corso", "success", 0, true);
   try {
     await apiClient.saveMyRow(payload);
+    hideToast();
     for (const change of payload.changes) changedCellKeys.delete(therapistId + "_" + change.date);
     dirty = changedCellKeys.size > 0;
     appState.ui.dirty = dirty;
@@ -1804,6 +1830,7 @@ async function saveMyRowChanges(changes){
     await refreshCurrentView();
     return true;
   } catch (error){
+    hideToast();
     handleApiError(error, "Salvataggio della propria riga");
     return false;
   }
@@ -1817,8 +1844,10 @@ async function saveAdminChanges(changes){
     return false;
   }
 
+  showToast("Salvataggio in corso", "success", 0, true);
   try {
     await apiClient.postAdminCalendar("save-changes", payload);
+    hideToast();
     for (const change of payload.changes) changedCellKeys.delete(change.therapistId + "_" + change.date);
     dirty = changedCellKeys.size > 0;
     appState.ui.dirty = dirty;
@@ -1827,6 +1856,7 @@ async function saveAdminChanges(changes){
     await refreshCurrentView();
     return true;
   } catch (error){
+    hideToast();
     handleApiError(error, "Salvataggio admin");
     return false;
   }
@@ -1989,6 +2019,9 @@ document.getElementById("change-password-form").addEventListener("submit", submi
 document.getElementById("change-password-cancel").addEventListener("click", closeChangePasswordModal);
 
 function initApp(){
+  const now = new Date();
+  appState.ui.currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  currentDate = appState.ui.currentDate;
   updateAuthControls();
   updateAuthStatus("Verifica sessione in corso...", "loading");
   updateDataStatus("In attesa della sessione", "info");
