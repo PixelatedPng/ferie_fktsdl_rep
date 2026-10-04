@@ -886,32 +886,33 @@ header,.toolbar,.legend{border-bottom-color:var(--border);}
 @media screen{
   html[data-theme="blackboard"]{
     color-scheme:dark;
-    --canvas:#08090a;--surface:#121316;--hover-bg:#1a1c20;
-    --border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.14);
-    --ink:#f7f8f8;--ink-muted:#8a8f98;--muted:#8a8f98;
-    --accent:#5e6ad2;--accent-hover:#6e79e0;--accent-light:#1a1c20;--accent-ring:rgba(94,106,210,.35);
-    --header-bg:#121316;--header-fg:#f7f8f8;--toggle-bg:#08090a;
-    --nonworking-bg:#0d0e10;--nonworking-fg:#4b4f57;
-    --alert-yellow:#3d3410;--alert-yellow-fg:#fde68a;
-    --alert-red:#4a1a20;--alert-red-fg:#fecaca;
-    --f-bg:#3b3112;--f-fg:#f5d77a;--f-border:#5a4a1a;
-    --cp-bg:#12303f;--cp-fg:#8fd0f0;--cp-border:#1d4a60;
-    --m-bg:#43181f;--m-fg:#fca5ae;--m-border:#68262f;
-    --c-bg:#0f3a35;--c-fg:#7ee8d8;--c-border:#17564f;
-    --c-half-bg:#12302d;--c-half-fg:#6fd6c6;--c-half-border:#1b4742;
-    --l-bg:#23262c;--l-fg:#d5d9e0;--l-border:#363a43;
-    --104-bg:#34204a;--104-fg:#d9b3f5;--104-border:#4d3068;
-    --rh-bg:#17381f;--rh-fg:#86e09a;--rh-border:#24542f;
-    --p-bg:#47260f;--p-fg:#fdba74;--p-border:#6a3a16;
+    --canvas:#17191e;--surface:#202329;--hover-bg:#2b2f37;
+    --border:rgba(230,235,255,.11);--border-strong:rgba(230,235,255,.2);
+    --ink:#f3f2f5;--ink-muted:#b0b4bf;--muted:#b0b4bf;
+    --accent:#9b92ff;--accent-hover:#b1aaff;--accent-light:#302d4a;--accent-ring:rgba(155,146,255,.38);
+    --header-bg:#202329;--header-fg:#f3f2f5;--toggle-bg:#17191e;
+    --nonworking-bg:#343942;--nonworking-fg:#e0e2e8;
+    --alert-yellow:#54492e;--alert-yellow-fg:#ffe6a3;
+    --alert-red:#57343d;--alert-red-fg:#ffd0d6;
+    --f-bg:#594d2e;--f-fg:#ffebad;--f-border:#8b7845;
+    --cp-bg:#304e60;--cp-fg:#c8edff;--cp-border:#4d7b94;
+    --m-bg:#593b49;--m-fg:#ffd0df;--m-border:#8a5b70;
+    --c-bg:#28564f;--c-fg:#bdfff0;--c-border:#43877b;
+    --c-half-bg:#31564f;--c-half-fg:#cafff1;--c-half-border:#4b8277;
+    --l-bg:#363b45;--l-fg:#e7e9f0;--l-border:#565d6a;
+    --104-bg:#4a3b60;--104-fg:#ead7ff;--104-border:#765f98;
+    --rh-bg:#35533d;--rh-fg:#d0ffd6;--rh-border:#548462;
+    --p-bg:#654731;--p-fg:#ffe0bd;--p-border:#966b48;
   }
   html[data-theme="blackboard"] body{background:var(--canvas);color:var(--ink);}
   html[data-theme="blackboard"] header,
   html[data-theme="blackboard"] .toolbar,
   html[data-theme="blackboard"] .legend,
   html[data-theme="blackboard"] #page-title{background:var(--surface);color:var(--ink);border-color:var(--border);}
-  html[data-theme="blackboard"] header{box-shadow:none;}
-  html[data-theme="blackboard"] .brand-badge{background:linear-gradient(135deg,#5e6ad2,#8b5cf6);box-shadow:0 0 12px rgba(94,106,210,.35);}
-  html[data-theme="blackboard"] .month-navigator{background:var(--canvas);border-color:var(--border);}
+  html[data-theme="blackboard"] header{box-shadow:inset 0 -1px 0 rgba(155,146,255,.18);}
+  html[data-theme="blackboard"] .brand-badge{background:linear-gradient(135deg,#8d88ff,#64cbbb);box-shadow:0 0 18px rgba(141,136,255,.28);}
+  html[data-theme="blackboard"] .month-navigator{background:#292c34;border-color:var(--border-strong);}
+  html[data-theme="blackboard"] .month-navigator button:hover:not(:disabled){background:#393c47;}
   html[data-theme="blackboard"] .month-navigator button{color:var(--ink-muted);}
   html[data-theme="blackboard"] .month-navigator button:hover:not(:disabled){background:var(--hover-bg);color:var(--ink);box-shadow:none;}
   html[data-theme="blackboard"] #month-label{color:var(--ink);}
@@ -919,22 +920,22 @@ header,.toolbar,.legend{border-bottom-color:var(--border);}
   html[data-theme="blackboard"] #syncbar .status-label{color:var(--ink-muted);}
   html[data-theme="blackboard"] #syncbar .status-message{color:var(--ink);}
   html[data-theme="blackboard"] #syncbar #data-updated{color:var(--ink-muted);}
-  html[data-theme="blackboard"] #syncbar.ok .status-group{background:#0f2418;border-color:#1f4a31;}
-  html[data-theme="blackboard"] #syncbar.err .status-group{background:#2a1215;border-color:#5a232a;}
-  html[data-theme="blackboard"] #syncbar.loading .status-group{background:#2a2410;border-color:#4d4119;}
-  html[data-theme="blackboard"] .auth-username{background:#1d2142;color:#b4bbff;}
+  html[data-theme="blackboard"] #syncbar.ok .status-group{background:#294335;border-color:#52795e;}
+  html[data-theme="blackboard"] #syncbar.err .status-group{background:#4a3037;border-color:#80535e;}
+  html[data-theme="blackboard"] #syncbar.loading .status-group{background:#51462c;border-color:#817044;}
+  html[data-theme="blackboard"] .auth-username{background:#393650;color:#dedaff;}
   html[data-theme="blackboard"] button{background:var(--surface);border-color:var(--border);color:var(--ink);}
   html[data-theme="blackboard"] button:hover:not(:disabled){background:var(--hover-bg);border-color:var(--border-strong);color:var(--ink);}
   html[data-theme="blackboard"] button:disabled,
-  html[data-theme="blackboard"] button[aria-disabled="true"]{background:var(--canvas);color:#4b4f57;border-color:var(--border);}
+  html[data-theme="blackboard"] button[aria-disabled="true"]{background:#2a2d34;color:#a1a5af;border-color:var(--border-strong);}
   html[data-theme="blackboard"] button.primary,
-  html[data-theme="blackboard"] button.primary:hover:not(:disabled){background:var(--accent);border-color:#7681e6;color:#fff;box-shadow:0 0 0 1px rgba(94,106,210,.4),0 4px 14px rgba(94,106,210,.25);}
+  html[data-theme="blackboard"] button.primary:hover:not(:disabled){background:#7770db;border-color:#a8a2ff;color:#fff;box-shadow:0 0 0 1px rgba(155,146,255,.4),0 4px 18px rgba(120,112,219,.24);}
   html[data-theme="blackboard"] button.primary:hover:not(:disabled){background:var(--accent-hover);}
-  html[data-theme="blackboard"] button.warn{background:var(--surface);color:#f87171;border-color:#5a232a;}
-  html[data-theme="blackboard"] button.warn:hover:not(:disabled){background:#2a1215;color:#fca5a5;}
-  html[data-theme="blackboard"] button.is-active{background:#1d2142;color:#b4bbff;border-color:var(--accent);}
+  html[data-theme="blackboard"] button.warn{background:var(--surface);color:#ffb3bd;border-color:#80535e;}
+  html[data-theme="blackboard"] button.warn:hover:not(:disabled){background:#4a3037;color:#ffd0d6;}
+  html[data-theme="blackboard"] button.is-active{background:#393650;color:#dedaff;border-color:var(--accent);}
   html[data-theme="blackboard"] .theme-toggle button{background:transparent;border:0;color:var(--ink-muted);}
-  html[data-theme="blackboard"] .theme-toggle button[aria-pressed="true"]{background:var(--hover-bg);color:var(--ink);box-shadow:0 0 0 1px var(--border-strong);}
+  html[data-theme="blackboard"] .theme-toggle button[aria-pressed="true"]{background:#393650;color:#e1deff;box-shadow:0 0 0 1px rgba(177,170,255,.4);}
   html[data-theme="blackboard"] .toolbar-codes{background:var(--surface);}
   html[data-theme="blackboard"] .status-btn:hover:not(:disabled){filter:brightness(1.25);}
   html[data-theme="blackboard"] .legend span{background:var(--canvas);border-color:var(--border);color:var(--ink-muted);}
@@ -946,6 +947,7 @@ header,.toolbar,.legend{border-bottom-color:var(--border);}
   html[data-theme="blackboard"] th.namecell{background:var(--hover-bg);color:var(--ink-muted);}
   html[data-theme="blackboard"] td.namecell{background:var(--surface);color:var(--ink);border-right:1px solid var(--border-strong);}
   html[data-theme="blackboard"] td.namecell strong{color:var(--ink);}
+  html[data-theme="blackboard"] td.daycell:not(.weekend):not(.holiday){background-color:#24272e;}
   html[data-theme="blackboard"] th.weekend,
   html[data-theme="blackboard"] td.weekend,
   html[data-theme="blackboard"] th.holiday,
@@ -969,7 +971,7 @@ header,.toolbar,.legend{border-bottom-color:var(--border);}
   html[data-theme="blackboard"] #admin-section summary:hover{background:var(--hover-bg);}
   html[data-theme="blackboard"] #admin-section .admin-body{background:var(--surface);border-color:var(--border);}
   html[data-theme="blackboard"] #admin-section .admin-body p{color:var(--ink-muted);}
-  html[data-theme="blackboard"] .admin-status-badge{background:#1d2142;border-color:#2c3270;color:#b4bbff;}
+  html[data-theme="blackboard"] .admin-status-badge{background:#393650;border-color:#625b8e;color:#dedaff;}
   html[data-theme="blackboard"] .modal-overlay{background:rgba(0,0,0,.6);}
   html[data-theme="blackboard"] .modal{background:rgba(18,19,22,.85);border-color:var(--border-strong);color:var(--ink);box-shadow:0 24px 60px rgba(0,0,0,.6);}
   html[data-theme="blackboard"] .modal h2,
@@ -982,6 +984,15 @@ header,.toolbar,.legend{border-bottom-color:var(--border);}
   html[data-theme="blackboard"] #toast.toast-success{background:rgba(15,58,40,.92);}
   html[data-theme="blackboard"] #toast.toast-error{background:rgba(74,26,32,.92);}
   html[data-theme="blackboard"] footer{color:var(--ink-muted);}
+  html[data-theme="blackboard"] td.status-F{box-shadow:inset 0 0 0 1px rgba(255,235,173,.2);}
+  html[data-theme="blackboard"] td.status-Cp{box-shadow:inset 0 0 0 1px rgba(200,237,255,.2);}
+  html[data-theme="blackboard"] td.status-M{box-shadow:inset 0 0 0 1px rgba(255,208,223,.2);}
+  html[data-theme="blackboard"] td.status-C,
+  html[data-theme="blackboard"] td.status-Chalf{box-shadow:inset 0 0 0 1px rgba(189,255,240,.2);}
+  html[data-theme="blackboard"] td.status-104{box-shadow:inset 0 0 0 1px rgba(234,215,255,.2);}
+  html[data-theme="blackboard"] td.status-Rh{box-shadow:inset 0 0 0 1px rgba(208,255,214,.2);}
+  html[data-theme="blackboard"] td.status-P{box-shadow:inset 0 0 0 1px rgba(255,224,189,.2);}
+  html[data-theme="blackboard"] .toolbar-codes{box-shadow:0 0 0 1px rgba(155,146,255,.09);}
 }
 
 /* Pulsanti codice con etichetta estesa (sostituiscono la legenda) */
@@ -1111,7 +1122,7 @@ header,.toolbar,.legend{border-bottom-color:var(--border);}
       <button id="btn-absence-mgmt">Gestione Assenze</button>
           <button id="btn-lock-month" aria-label="Blocca o sblocca il mese">Blocco mese</button>
     </div>
-    <p>La sincronizzazione dei dati sara gestita dal backend autenticato.</p>
+    <p>La sincronizzazione dei dati è gestita tramite un backend autenticato criptato.</p>
   </div>
 </details>
 
@@ -1951,7 +1962,7 @@ function applyCodeToSelection(code){
     const message = code === null
       ? "Alcune celle non appartengono alla tua riga e non sono state modificate."
       : "Codice '" + code + "' non consentito in " + skipped + " cella/e (riga o giorno non valido).";
-    showToast(message, "info", 3000, true);
+    showToast(message, "info", 1700, true);
   }
 }
 
