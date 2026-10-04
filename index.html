@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planning Ferie e Assenze</title>
+<script>
+(function(){
+  var theme = "air";
+  try { var s = localStorage.getItem("planning_theme"); if (s === "air" || s === "blackboard") theme = s; } catch (e) {}
+  document.documentElement.setAttribute("data-theme", theme);
+})();
+</script>
 <style>
 /* =====================================================================
    VARIABILI COLORE (CSS custom properties)
@@ -816,7 +823,182 @@ td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
     padding:0;
   }
 }
-</style>
+
+/* =====================================================================
+   TEMI: Air (default) / Blackboard  -  data-theme su <html>
+   ===================================================================== */
+:root{
+  --font-ui:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+body{font-family:var(--font-ui);}
+button,input,select{font-family:inherit;}
+td.daycell,.status-btn,.legend i{font-family:var(--font-mono);}
+td.daycell,.status-btn{letter-spacing:-.02em;}
+
+/* Header a tre zone */
+header{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"title right" "month month";align-items:center;gap:8px 12px;padding:8px 20px;}
+.header-left{grid-area:title;}
+.header-right{grid-area:right;}
+header .month-navigator{grid-area:month;}
+.header-left{min-width:0;}
+.header-left h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+header .month-navigator{justify-self:start;}
+.header-right{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+#syncbar{flex:0 1 auto;width:auto;padding:0;border:0;margin:0;}
+#btn-company-login{margin-left:0;}
+
+.theme-toggle{display:inline-flex;padding:2px;gap:2px;border:1px solid var(--border);border-radius:999px;background:var(--toggle-bg,#f1f5f9);}
+.theme-toggle button{min-height:24px;height:24px;padding:0 10px;gap:5px;border:0;border-radius:999px;background:transparent;color:var(--ink-muted);font-size:11px;font-weight:600;}
+.theme-toggle button:hover:not(:disabled){background:transparent;color:var(--ink);}
+.theme-toggle button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--border);}
+
+/* Toolbar a gruppi */
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:8px 16px;}
+.toolbar-hint{flex:1 0 100%;}
+.toolbar-codes{gap:0;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.toolbar-codes .status-btn{height:28px;min-height:28px;border-radius:0;border:0;border-right:1px solid var(--border);}
+.toolbar-codes .status-btn:last-child{border-right:0;}
+.toolbar-codes .status-btn:hover:not(:disabled){transform:none;box-shadow:none;filter:brightness(.95);}
+.toolbar-actions{margin-left:0;}
+.toolbar-save{margin-left:auto;}
+.toolbar-save button.primary{min-height:32px;padding:5px 18px;}
+.toolbar-actions button,.toolbar-save button{border-radius:4px;}
+
+/* Bordi piu sottili (Air) */
+table,.legend span,#syncbar .status-group,.modal,#admin-section{border-width:1px;}
+th,td{border-right-color:var(--border);border-bottom-color:var(--border);}
+header,.toolbar,.legend{border-bottom-color:var(--border);}
+
+/* Modali e toast */
+.modal-overlay{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.modal,#toast{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);}
+
+@media (max-width:900px){
+  header{grid-template-columns:1fr;grid-template-areas:"title" "right" "month";}
+  .header-right{justify-content:flex-start;}
+}
+@media (max-width:768px){
+  .toolbar-codes{display:grid;overflow:hidden;gap:0;}
+  .toolbar-save{margin-left:0;}
+}
+
+@media screen{
+  html[data-theme="blackboard"]{
+    color-scheme:dark;
+    --canvas:#08090a;--surface:#121316;--hover-bg:#1a1c20;
+    --border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.14);
+    --ink:#f7f8f8;--ink-muted:#8a8f98;--muted:#8a8f98;
+    --accent:#5e6ad2;--accent-hover:#6e79e0;--accent-light:#1a1c20;--accent-ring:rgba(94,106,210,.35);
+    --header-bg:#121316;--header-fg:#f7f8f8;--toggle-bg:#08090a;
+    --nonworking-bg:#0d0e10;--nonworking-fg:#4b4f57;
+    --alert-yellow:#3d3410;--alert-yellow-fg:#fde68a;
+    --alert-red:#4a1a20;--alert-red-fg:#fecaca;
+    --f-bg:#3b3112;--f-fg:#f5d77a;--f-border:#5a4a1a;
+    --cp-bg:#12303f;--cp-fg:#8fd0f0;--cp-border:#1d4a60;
+    --m-bg:#43181f;--m-fg:#fca5ae;--m-border:#68262f;
+    --c-bg:#0f3a35;--c-fg:#7ee8d8;--c-border:#17564f;
+    --c-half-bg:#12302d;--c-half-fg:#6fd6c6;--c-half-border:#1b4742;
+    --l-bg:#23262c;--l-fg:#d5d9e0;--l-border:#363a43;
+    --104-bg:#34204a;--104-fg:#d9b3f5;--104-border:#4d3068;
+    --rh-bg:#17381f;--rh-fg:#86e09a;--rh-border:#24542f;
+    --p-bg:#47260f;--p-fg:#fdba74;--p-border:#6a3a16;
+  }
+  html[data-theme="blackboard"] body{background:var(--canvas);color:var(--ink);}
+  html[data-theme="blackboard"] header,
+  html[data-theme="blackboard"] .toolbar,
+  html[data-theme="blackboard"] .legend,
+  html[data-theme="blackboard"] #page-title{background:var(--surface);color:var(--ink);border-color:var(--border);}
+  html[data-theme="blackboard"] header{box-shadow:none;}
+  html[data-theme="blackboard"] .brand-badge{background:linear-gradient(135deg,#5e6ad2,#8b5cf6);box-shadow:0 0 12px rgba(94,106,210,.35);}
+  html[data-theme="blackboard"] .month-navigator{background:var(--canvas);border-color:var(--border);}
+  html[data-theme="blackboard"] .month-navigator button{color:var(--ink-muted);}
+  html[data-theme="blackboard"] .month-navigator button:hover:not(:disabled){background:var(--hover-bg);color:var(--ink);box-shadow:none;}
+  html[data-theme="blackboard"] #month-label{color:var(--ink);}
+  html[data-theme="blackboard"] #syncbar .status-group{background:var(--canvas);border-color:var(--border);}
+  html[data-theme="blackboard"] #syncbar .status-label{color:var(--ink-muted);}
+  html[data-theme="blackboard"] #syncbar .status-message{color:var(--ink);}
+  html[data-theme="blackboard"] #syncbar #data-updated{color:var(--ink-muted);}
+  html[data-theme="blackboard"] #syncbar.ok .status-group{background:#0f2418;border-color:#1f4a31;}
+  html[data-theme="blackboard"] #syncbar.err .status-group{background:#2a1215;border-color:#5a232a;}
+  html[data-theme="blackboard"] #syncbar.loading .status-group{background:#2a2410;border-color:#4d4119;}
+  html[data-theme="blackboard"] .auth-username{background:#1d2142;color:#b4bbff;}
+  html[data-theme="blackboard"] button{background:var(--surface);border-color:var(--border);color:var(--ink);}
+  html[data-theme="blackboard"] button:hover:not(:disabled){background:var(--hover-bg);border-color:var(--border-strong);color:var(--ink);}
+  html[data-theme="blackboard"] button:disabled,
+  html[data-theme="blackboard"] button[aria-disabled="true"]{background:var(--canvas);color:#4b4f57;border-color:var(--border);}
+  html[data-theme="blackboard"] button.primary,
+  html[data-theme="blackboard"] button.primary:hover:not(:disabled){background:var(--accent);border-color:#7681e6;color:#fff;box-shadow:0 0 0 1px rgba(94,106,210,.4),0 4px 14px rgba(94,106,210,.25);}
+  html[data-theme="blackboard"] button.primary:hover:not(:disabled){background:var(--accent-hover);}
+  html[data-theme="blackboard"] button.warn{background:var(--surface);color:#f87171;border-color:#5a232a;}
+  html[data-theme="blackboard"] button.warn:hover:not(:disabled){background:#2a1215;color:#fca5a5;}
+  html[data-theme="blackboard"] button.is-active{background:#1d2142;color:#b4bbff;border-color:var(--accent);}
+  html[data-theme="blackboard"] .theme-toggle button{background:transparent;border:0;color:var(--ink-muted);}
+  html[data-theme="blackboard"] .theme-toggle button[aria-pressed="true"]{background:var(--hover-bg);color:var(--ink);box-shadow:0 0 0 1px var(--border-strong);}
+  html[data-theme="blackboard"] .toolbar-codes{background:var(--surface);}
+  html[data-theme="blackboard"] .status-btn:hover:not(:disabled){filter:brightness(1.25);}
+  html[data-theme="blackboard"] .legend span{background:var(--canvas);border-color:var(--border);color:var(--ink-muted);}
+  html[data-theme="blackboard"] .legend i{border-color:rgba(255,255,255,.15);}
+  html[data-theme="blackboard"] table{background:var(--surface);border-color:var(--border);box-shadow:none;}
+  html[data-theme="blackboard"] th,
+  html[data-theme="blackboard"] td{border-right-color:var(--border);border-bottom-color:var(--border);color:var(--ink);}
+  html[data-theme="blackboard"] th{background:var(--hover-bg);color:var(--ink-muted);box-shadow:0 1px 0 var(--border);}
+  html[data-theme="blackboard"] th.namecell{background:var(--hover-bg);color:var(--ink-muted);}
+  html[data-theme="blackboard"] td.namecell{background:var(--surface);color:var(--ink);border-right:1px solid var(--border-strong);}
+  html[data-theme="blackboard"] td.namecell strong{color:var(--ink);}
+  html[data-theme="blackboard"] th.weekend,
+  html[data-theme="blackboard"] td.weekend,
+  html[data-theme="blackboard"] th.holiday,
+  html[data-theme="blackboard"] td.holiday,
+  html[data-theme="blackboard"] tr.absence-summary-row td.weekend,
+  html[data-theme="blackboard"] tr.absence-summary-row td.holiday{background:var(--nonworking-bg);color:var(--nonworking-fg);}
+  html[data-theme="blackboard"] td.daycell:hover:not(.is-locked){box-shadow:inset 0 0 0 1px var(--accent);background-color:var(--hover-bg);}
+  html[data-theme="blackboard"] td.daycell.selected,
+  html[data-theme="blackboard"] td.selected{outline:1px solid #5e6ad2 !important;outline-offset:-1px;box-shadow:inset 0 0 0 1px #5e6ad2,0 0 8px rgba(94,106,210,.6);}
+  html[data-theme="blackboard"] tr.group-row td{background:var(--hover-bg);color:var(--ink);border-top:1px solid var(--border-strong);}
+  html[data-theme="blackboard"] tr.spacer-row td{background:var(--canvas);}
+  html[data-theme="blackboard"] tr.absence-summary-row td{background:var(--surface);color:var(--ink-muted);}
+  html[data-theme="blackboard"] tr.absence-summary-row td.namecell{background:var(--hover-bg);color:var(--ink);}
+  html[data-theme="blackboard"] th.riepilogocell,
+  html[data-theme="blackboard"] td.riepilogocell{background:var(--surface);color:var(--ink-muted);}
+  html[data-theme="blackboard"] td.riepilogocell .riep-item{background:var(--hover-bg);color:var(--ink);}
+  html[data-theme="blackboard"] td.riepilogocell .riep-empty{color:#4b4f57;}
+  html[data-theme="blackboard"] .tag-badge{background:var(--hover-bg);color:var(--ink-muted);border-color:var(--border-strong);}
+  html[data-theme="blackboard"] #admin-section{background:var(--surface);border-color:var(--border);box-shadow:none;}
+  html[data-theme="blackboard"] #admin-section summary{background:var(--surface);color:var(--ink);}
+  html[data-theme="blackboard"] #admin-section summary:hover{background:var(--hover-bg);}
+  html[data-theme="blackboard"] #admin-section .admin-body{background:var(--surface);border-color:var(--border);}
+  html[data-theme="blackboard"] #admin-section .admin-body p{color:var(--ink-muted);}
+  html[data-theme="blackboard"] .admin-status-badge{background:#1d2142;border-color:#2c3270;color:#b4bbff;}
+  html[data-theme="blackboard"] .modal-overlay{background:rgba(0,0,0,.6);}
+  html[data-theme="blackboard"] .modal{background:rgba(18,19,22,.85);border-color:var(--border-strong);color:var(--ink);box-shadow:0 24px 60px rgba(0,0,0,.6);}
+  html[data-theme="blackboard"] .modal h2,
+  html[data-theme="blackboard"] .modal label{color:var(--ink);}
+  html[data-theme="blackboard"] .modal p{color:var(--ink-muted);}
+  html[data-theme="blackboard"] .modal input,
+  html[data-theme="blackboard"] .modal select{background:var(--canvas);color:var(--ink);border-color:var(--border-strong);}
+  html[data-theme="blackboard"] #toast{background:rgba(26,28,32,.9);color:var(--ink);border-color:var(--border-strong);box-shadow:0 12px 32px rgba(0,0,0,.5);}
+  html[data-theme="blackboard"] #toast.toast-info{background:rgba(29,33,66,.92);}
+  html[data-theme="blackboard"] #toast.toast-success{background:rgba(15,58,40,.92);}
+  html[data-theme="blackboard"] #toast.toast-error{background:rgba(74,26,32,.92);}
+  html[data-theme="blackboard"] footer{color:var(--ink-muted);}
+}
+
+/* Pulsanti codice con etichetta estesa (sostituiscono la legenda) */
+.toolbar-codes{flex-wrap:wrap;}
+.toolbar-codes .status-btn{width:auto;min-width:0;padding:0 10px;gap:6px;font-weight:600;}
+.toolbar-codes .status-btn b{font-family:var(--font-mono);font-weight:800;font-size:12px;}
+.toolbar-codes .status-btn span{font-family:var(--font-ui);font-size:11px;font-weight:500;opacity:.85;}
+@media (max-width:768px){
+  .toolbar-codes{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .toolbar-codes .status-btn{justify-content:flex-start;}
+}
+/* Stampa: sempre bianco su nero, A4 orizzontale, indipendente dal tema */
+@media print{
+  html[data-theme="blackboard"] body,
+  html[data-theme="blackboard"] table,
+  html[data-theme="blackboard"] main{background:#fff !important;color:#000 !important;}
+}</style>
 </head>
 <body>
 
@@ -832,24 +1014,36 @@ td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
       </svg>
     </div>
     <h1>Planning Ferie e Assenze</h1>
-    <div class="month-navigator">
-      <button id="btn-prev-month" aria-label="Mese precedente" title="Mese precedente">&lsaquo;</button>
-      <span id="month-label"></span>
-      <span id="monthLockIndicator" class="month-lock-indicator" aria-live="polite" title="Mese sbloccato"></span>
-      <button id="btn-next-month" aria-label="Mese successivo" title="Mese successivo">&rsaquo;</button>
-    </div>
   </div>
-  <div id="syncbar">
-    <span class="status-group">
-      <span class="status-label">Sessione:</span>
-      <span id="auth-status" class="status-message" aria-live="polite">Sessione non verificata</span>
-      <span id="auth-username" class="auth-username" hidden aria-hidden="true"></span>
-    </span>
-    <span class="status-group">
-      <span class="status-label">Dati:</span>
-      <span id="data-status" class="status-message" aria-live="polite">In attesa di caricamento</span>
-      <span id="data-updated" aria-live="polite"></span>
-    </span>
+  <div class="month-navigator">
+    <button id="btn-prev-month" aria-label="Mese precedente" title="Mese precedente">&lsaquo;</button>
+    <span id="month-label"></span>
+    <span id="monthLockIndicator" class="month-lock-indicator" aria-live="polite" title="Mese sbloccato"></span>
+    <button id="btn-next-month" aria-label="Mese successivo" title="Mese successivo">&rsaquo;</button>
+  </div>
+  <div class="header-right">
+    <div class="theme-toggle" role="group" aria-label="Tema">
+      <button type="button" id="btn-theme-air" data-theme-value="air" aria-pressed="true" title="Tema Air">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+        <span>Air</span>
+      </button>
+      <button type="button" id="btn-theme-blackboard" data-theme-value="blackboard" aria-pressed="false" title="Tema Blackboard">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <span>Blackboard</span>
+      </button>
+    </div>
+    <div id="syncbar">
+      <span class="status-group">
+        <span class="status-label">Sessione:</span>
+        <span id="auth-status" class="status-message" aria-live="polite">Sessione non verificata</span>
+        <span id="auth-username" class="auth-username" hidden aria-hidden="true"></span>
+      </span>
+      <span class="status-group">
+        <span class="status-label">Dati:</span>
+        <span id="data-status" class="status-message" aria-live="polite">In attesa di caricamento</span>
+        <span id="data-updated" aria-live="polite"></span>
+      </span>
+    </div>
     <button id="btn-company-login" class="primary">Accedi con il tuo account</button>
     <button id="btn-change-password" hidden aria-hidden="true">Cambia password</button>
     <button id="btn-company-logout">Logout</button>
@@ -865,36 +1059,24 @@ td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
     </svg>
     <span id="toolbar-help" role="status" aria-live="polite">Seleziona celle (click o trascina), poi assegna:</span>
   </div>
-  <div class="toolbar-section toolbar-codes">
-    <button class="status-btn status-F" data-code="F" title="Ferie" aria-label="Assegna ferie">F</button>
-    <button class="status-btn status-Cp" data-code="Cp" title="Congedo parentale" aria-label="Assegna congedo parentale">Cp</button>
-    <button class="status-btn status-M" data-code="M" title="Malattia" aria-label="Assegna malattia">M</button>
-    <button class="status-btn status-C" data-code="C" title="Corso" aria-label="Assegna corso">C</button>
-    <button class="status-btn status-Chalf" data-code="C½" title="Corso mezza giornata" aria-label="Assegna corso mezza giornata">C½</button>
-    <button class="status-btn status-L" data-code="L" title="Lavorativo sabato" aria-label="Assegna lavorativo sabato">L</button>
-    <button class="status-btn status-104" data-code="104" title="Legge 104" aria-label="Assegna legge 104">104</button>
-    <button class="status-btn status-Rh" data-code="Rh" title="Recupero ore" aria-label="Assegna recupero ore">Rh</button>
-    <button class="status-btn status-P" data-code="P" title="Permesso" aria-label="Assegna permesso">P</button>
+  <div class="toolbar-section toolbar-codes" role="group" aria-label="Codici assenza">
+    <button class="status-btn status-F" data-code="F" title="Ferie" aria-label="Assegna ferie"><b>F</b><span>Ferie</span></button>
+    <button class="status-btn status-Cp" data-code="Cp" title="Congedo parentale" aria-label="Assegna congedo parentale"><b>Cp</b><span>Congedo parentale</span></button>
+    <button class="status-btn status-M" data-code="M" title="Malattia" aria-label="Assegna malattia"><b>M</b><span>Malattia</span></button>
+    <button class="status-btn status-C" data-code="C" title="Corso" aria-label="Assegna corso"><b>C</b><span>Corso</span></button>
+    <button class="status-btn status-Chalf" data-code="C½" title="Corso mezza giornata" aria-label="Assegna corso mezza giornata"><b>C½</b><span>Corso ½</span></button>
+    <button class="status-btn status-L" data-code="L" title="Lavorativo sabato" aria-label="Assegna lavorativo sabato"><b>L</b><span>Sabato lavorativo</span></button>
+    <button class="status-btn status-104" data-code="104" title="Legge 104" aria-label="Assegna legge 104"><b>104</b><span>Legge 104</span></button>
+    <button class="status-btn status-Rh" data-code="Rh" title="Recupero ore" aria-label="Assegna recupero ore"><b>Rh</b><span>Recupero ore</span></button>
+    <button class="status-btn status-P" data-code="P" title="Permesso" aria-label="Assegna permesso"><b>P</b><span>Permesso</span></button>
   </div>
   <div class="toolbar-section toolbar-actions">
     <button id="btn-clear-cell" title="Cancella il codice dalle celle selezionate">Cancella</button>
     <button id="btn-deselect">Annulla selezione</button>
+  </div>
+  <div class="toolbar-section toolbar-save">
     <button id="btn-save-my-row" class="primary">Salva modifiche</button>
   </div>
-</div>
-
-<div class="legend">
-  <span><i style="background:var(--f-bg);border-color:var(--f-border)"></i> F - Ferie</span>
-  <span><i style="background:var(--cp-bg);border-color:var(--cp-border)"></i> Cp - Congedo parentale</span>
-  <span><i style="background:var(--m-bg);border-color:var(--m-border)"></i> M - Malattia</span>
-  <span><i style="background:var(--c-bg);border-color:var(--c-border)"></i> C - Corso</span>
-  <span><i style="background:var(--c-half-bg);border-color:var(--c-half-border)"></i> C½ - Corso mezza giornata</span>
-  <span><i style="background:var(--l-bg);border-color:var(--l-border)"></i> L - Sabato lavorativo</span>
-  <span><i style="background:var(--104-bg);border-color:var(--104-border)"></i> 104 - Legge 104</span>
-  <span><i style="background:var(--rh-bg);border-color:var(--rh-border)"></i> Rh - Recupero ore</span>
-  <span><i style="background:var(--p-bg);border-color:var(--p-border)"></i> P - Permesso</span>
-  <span><i style="background:#f1f5f9;border-color:#cbd5e1"></i> Cancella - Elimina dato</span>
-  
 </div>
 
 <main>
@@ -1237,7 +1419,6 @@ function updateSessionVisibility(){
     element.setAttribute("aria-hidden", String(hidden));
   };
   setHidden(document.querySelector(".toolbar"), !(canViewPlanning || canViewGuestSummary));
-  setHidden(document.querySelector(".legend"), !canViewPlanning);
   setHidden(document.getElementById("syncbar"), false);
   setHidden(document.getElementById("admin-section"), !isAdmin);
   setHidden(document.getElementById("btn-prev-month"), !(canViewPlanning || canViewGuestSummary));
@@ -2218,6 +2399,10 @@ const apiClient = {
     throw new ApiError(message, response.status, payload);
   },
 
+  saveThemePreference(theme){
+    return this.request("/me/preferences", { method: "PATCH", body: { theme: theme } });
+  },
+
   getSession(){
     return this.request("/session", { method: "GET" });
   },
@@ -2515,12 +2700,70 @@ async function saveAdminChanges(changes){
   }
 }
 
+/* =====================================================================
+   TEMA (Air / Blackboard) - persistenza locale + profilo utente
+   ===================================================================== */
+const THEME_STORAGE_KEY = "planning_theme";
+const THEMES = ["air", "blackboard"];
+
+function normalizeTheme(value){
+  return THEMES.includes(value) ? value : null;
+}
+
+function readStoredTheme(){
+  try { return normalizeTheme(localStorage.getItem(THEME_STORAGE_KEY)) || "air"; }
+  catch (e){ return "air"; }
+}
+
+function applyTheme(theme){
+  const safeTheme = normalizeTheme(theme) || "air";
+  document.documentElement.setAttribute("data-theme", safeTheme);
+  document.querySelectorAll("[data-theme-value]").forEach(btn => {
+    btn.setAttribute("aria-pressed", String(btn.dataset.themeValue === safeTheme));
+  });
+  return safeTheme;
+}
+
+function storeTheme(theme){
+  try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch (e){}
+}
+
+async function syncThemeToBackend(theme){
+  if (appState.session.status !== "authenticated") return;
+  try {
+    await apiClient.saveThemePreference(theme);
+  } catch (error){
+    console.warn("Preferenza tema non salvata sul profilo", error);
+  }
+}
+
+function setTheme(theme){
+  const safeTheme = applyTheme(theme);
+  storeTheme(safeTheme);
+  syncThemeToBackend(safeTheme);
+}
+
+function applyThemeFromSession(sessionPayload){
+  if (!sessionPayload || sessionPayload.status !== "authenticated") return;
+  const user = sessionPayload.user || {};
+  const prefs = sessionPayload.preferences || user.preferences || {};
+  const saved = normalizeTheme(prefs.theme || user.theme || sessionPayload.theme);
+  if (!saved) return;
+  storeTheme(applyTheme(saved));
+}
+
+applyTheme(readStoredTheme());
+document.querySelectorAll("[data-theme-value]").forEach(btn => {
+  btn.addEventListener("click", () => setTheme(btn.dataset.themeValue));
+});
+
 async function fetchSession(){
   authLoading = true;
   updateAuthControls();
   try {
     const sessionPayload = await apiClient.getSession();
     setSession(sessionPayload);
+    applyThemeFromSession(sessionPayload);
     await refreshCurrentView();
     return sessionPayload;
   } catch (error){
