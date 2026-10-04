@@ -2160,9 +2160,15 @@ const API_BASE_URL = "https://ferie-fktsdl-rep-backend.onrender.com";
 
 const apiClient = {
   async request(path, options){
-    const requestOptions = Object.assign({}, options || {}, { credentials: "include" });
+    const token = localStorage.getItem("token_planning");
+    const headers = Object.assign(
+      {},
+      options && options.headers ? options.headers : {},
+      token ? { "Authorization": "Bearer " + token } : {}
+    );
+    const requestOptions = Object.assign({}, options || {}, { headers: headers });
     if (requestOptions.body && typeof requestOptions.body !== "string"){
-      requestOptions.headers = Object.assign({ "Content-Type": "application/json" }, requestOptions.headers || {});
+      headers["Content-Type"] = "application/json";
       requestOptions.body = JSON.stringify(requestOptions.body);
     }
 
@@ -2545,7 +2551,10 @@ async function submitCompanyLogin(event){
   authLoading = true;
   updateAuthControls();
   try {
-    await apiClient.login({ username: username, password: password });
+    const loginRes = await apiClient.login({ username: username, password: password });
+    if (loginRes && loginRes.token) {
+      localStorage.setItem("token_planning", loginRes.token);
+    }
     closeCompanyLogin();
     await fetchSession();
     await refreshCurrentView();
@@ -2572,6 +2581,7 @@ async function logoutCompanyAccount(){
   } catch (error){
     handleApiError(error, "Logout");
   } finally {
+    localStorage.removeItem("token_planning");
     await fetchSession();
     await refreshCurrentView();
     if (logoutSucceeded) showToast("Logout completato", "success");
@@ -2617,6 +2627,7 @@ async function submitChangePassword(event){
   message.textContent = "Salvataggio in corso...";
   try {
     await apiClient.changePassword({ currentPassword, newPassword, confirmPassword });
+    localStorage.removeItem("token_planning");
     closeChangePasswordModal();
     await fetchSession();
     await refreshCurrentView();
