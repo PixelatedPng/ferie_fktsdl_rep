@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planning delle ferie </title>
+<title>Planning Ferie e Assenze</title>
 <style>
 /* =====================================================================
    VARIABILI COLORE (CSS custom properties)
@@ -547,6 +547,7 @@ button.is-active{background:var(--accent-light);color:var(--accent);border-color
   border:1px solid var(--border);border-radius:var(--radius-md);color:#475569;font-size:11px;font-weight:500;
 }
 .legend i{width:8px;height:8px;flex-shrink:0;border:1px solid rgba(0,0,0,.12);border-radius:50%;}
+.auth-username{padding:2px 6px;border-radius:var(--radius-sm);background:#e0f2fe;color:#075985;font-size:10px;font-weight:700;}
 
 main{padding:16px 20px;overflow-x:auto;}
 table{
@@ -638,6 +639,14 @@ td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
   #admin-section{margin:10px 14px;}
 }
 
+@media screen{
+  th.weekend,td.weekend,th.holiday,td.holiday,
+  tr.absence-summary-row td.weekend,tr.absence-summary-row td.holiday{
+    background:#cbd5e1;
+    color:#334155;
+  }
+}
+
 @media print{
   @page{
     size:A4 landscape;
@@ -665,6 +674,16 @@ td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
   td.holiday{
     background-color:var(--nonworking-bg) !important;
     color:var(--nonworking-fg) !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  body:not(.print-absence-mode) th.weekend,
+  body:not(.print-absence-mode) td.weekend,
+  body:not(.print-absence-mode) th.holiday,
+  body:not(.print-absence-mode) td.holiday{
+    background-color:#cbd5e1 !important;
+    color:#334155 !important;
     -webkit-print-color-adjust:exact;
     print-color-adjust:exact;
   }
@@ -824,6 +843,7 @@ td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
     <span class="status-group">
       <span class="status-label">Sessione:</span>
       <span id="auth-status" class="status-message" aria-live="polite">Sessione non verificata</span>
+      <span id="auth-username" class="auth-username" hidden aria-hidden="true"></span>
     </span>
     <span class="status-group">
       <span class="status-label">Dati:</span>
@@ -913,7 +933,7 @@ td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
   </div>
 </details>
 
-<div id="page-title">Planning delle ferie in VibeCoding 2.2.0P - ©PixelatedPng//@DaveFt__</div>
+<div id="page-title">Planning 2.3.0 - ©PixelatedPng//@DaveFt__</div>
 
 <!-- ==================== MODAL: AGGIUNGI TERAPISTA ==================== -->
 <div class="modal-overlay" id="modal-add" hidden aria-hidden="true">
@@ -1154,6 +1174,7 @@ function setSession(sessionPayload){
     ? {
       id: payload.user.id,
       displayName: payload.user.displayName,
+      username: payload.user.username || payload.user.login || payload.user.displayName || "",
       therapistId: payload.user.therapistId
     } : null;
 
@@ -1241,7 +1262,13 @@ function updateAuthControls(){
   const loginButton = document.getElementById("btn-company-login");
   const changePasswordButton = document.getElementById("btn-change-password");
   const logoutButton = document.getElementById("btn-company-logout");
+  const usernameBadge = document.getElementById("auth-username");
   const isAuthenticated = appState.session.status === "authenticated";
+  const username = isAuthenticated && appState.session.user
+    ? appState.session.user.username : "";
+  usernameBadge.textContent = username ? "@" + username : "";
+  usernameBadge.hidden = !username;
+  usernameBadge.setAttribute("aria-hidden", String(!username));
   loginButton.disabled = authLoading || isAuthenticated;
   changePasswordButton.hidden = !isAuthenticated;
   changePasswordButton.setAttribute("aria-hidden", String(!isAuthenticated));
