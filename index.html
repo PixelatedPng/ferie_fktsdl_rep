@@ -170,6 +170,474 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
 #toast.toast-info.toast-center{
   background:#1db379;
 }
+
+/* Sistema visivo */
+:root{
+  --border:#e3e6ec;
+  --header-bg:#fff;
+  --header-fg:#202127;
+  --alert-yellow:#fff0c2;
+  --alert-red:#ffd9dc;
+  --canvas:#f7f8fa;
+  --ink:#202127;
+  --muted:#747985;
+  --accent:#3c68df;
+  --accent-hover:#2f56c2;
+}
+
+body{
+  font-family:"Segoe UI Variable",Aptos,sans-serif;
+  background:var(--canvas);
+  color:var(--ink);
+  font-size:13px;
+}
+
+header{
+  padding:14px 24px 12px;
+  gap:10px;
+  border-bottom:1px solid var(--border);
+  box-shadow:0 1px 2px rgba(20,24,35,.03);
+}
+
+header h1{
+  font-size:18px;
+  font-weight:650;
+  letter-spacing:0;
+}
+
+header > button{
+  width:34px;
+  height:34px;
+  padding:0;
+  border-color:var(--border);
+  border-radius:6px;
+  color:#535865;
+  font-size:18px;
+}
+
+#month-label{
+  min-width:132px;
+  color:#343741;
+  font-size:13px;
+  font-weight:600;
+}
+
+#syncbar{
+  flex:1 0 100%;
+  padding:10px 0 0;
+  border:0;
+  border-top:1px solid var(--border);
+  background:transparent;
+  font-size:12px;
+}
+
+#syncbar.ok,
+#syncbar.err,
+#syncbar.loading,
+#syncbar.info{
+  background:transparent;
+  border-bottom-color:transparent;
+}
+
+#syncbar .status-group{gap:6px;margin-right:12px;}
+#syncbar .status-label{color:#777c87;font-size:10px;font-weight:650;text-transform:uppercase;}
+#syncbar .status-message{color:#343741;}
+#syncbar #data-updated{color:var(--muted);}
+#btn-company-login{margin-left:auto;}
+
+button{
+  min-height:32px;
+  padding:6px 10px;
+  border-color:#dfe2e8;
+  border-radius:6px;
+  color:#343741;
+  font-size:12px;
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease;
+}
+
+button:hover:not(:disabled){
+  background:#f1f3f6;
+  border-color:#cbd0d9;
+}
+
+button:focus-visible,
+td.daycell:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+button.primary,
+button.primary:hover:not(:disabled){
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+
+button.primary:hover:not(:disabled){background:var(--accent-hover);}
+button.warn{background:#fff;color:#bd3c45;border-color:#efc6c9;}
+button.warn:hover:not(:disabled){background:#fff1f2;border-color:#e7aeb3;color:#a92e37;}
+button.is-active{background:#eaf0ff;color:#2853bd;border-color:#b9c9f6;}
+
+.toolbar{
+  gap:7px;
+  padding:11px 24px;
+  background:#fbfbfc;
+  border-bottom:1px solid var(--border);
+}
+
+#toolbar-help{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.status-btn{
+  width:40px;
+  min-height:32px;
+  border-color:rgba(40,45,55,.08);
+  border-radius:6px;
+}
+
+.legend{
+  gap:9px 16px;
+  padding:11px 24px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  color:#525762;
+  font-size:11px;
+}
+
+.legend i{
+  width:12px;
+  height:12px;
+  border:1px solid rgba(30,35,45,.12);
+  border-radius:3px;
+}
+
+main{padding:16px 24px;}
+
+table{
+  min-width:1000px;
+  background:#fff;
+  border:1px solid var(--border);
+}
+
+th,td{
+  border-color:#e8eaf0;
+  height:29px;
+  font-size:11px;
+}
+
+th{
+  background:#f7f8fa;
+  color:#505561;
+  font-size:10px;
+  font-weight:650;
+}
+
+td.namecell,th.namecell{
+  min-width:180px;
+  padding-left:10px;
+  font-size:12px;
+  box-shadow:1px 0 0 #e5e7ec;
+}
+
+th.namecell{background:#f7f8fa;}
+td.namecell{background:#fff;}
+
+td.daycell{
+  width:29px;
+  transition:box-shadow .12s ease,background-color .12s ease;
+}
+
+td.daycell:hover:not(.is-locked){
+  box-shadow:inset 0 0 0 2px rgba(60,104,223,.48);
+}
+
+td.selected{outline:2px solid var(--accent);outline-offset:-2px;}
+td.weekend,td.holiday{background:#f1f2f5;}
+
+th.riepilogocell,td.riepilogocell{
+  background:#fafbfc;
+  color:#4c515d;
+}
+
+tr.group-row td{
+  background:#292b32;
+  color:#f7f7f8;
+  padding-left:10px;
+}
+
+tr.spacer-row td{height:10px;background:var(--canvas);}
+tr.absence-summary-row td{background:#edf2fa;color:#343b49;}
+tr.absence-summary-row td.namecell{background:#e4eaf4;color:#283346;}
+
+#admin-section{
+  max-width:none;
+  margin:8px 24px 14px;
+  border:1px solid var(--border);
+  border-radius:7px;
+  background:#fff;
+}
+
+#admin-section summary{padding:10px 14px;color:#343741;font-size:12px;}
+#admin-section .admin-body{padding:12px 14px;}
+#admin-section .admin-body .admin-toolbar{gap:7px;}
+#admin-section .admin-body .admin-toolbar button{min-height:30px;font-size:11px;}
+.admin-status-badge{background:#f0f2f5;color:#626875;border-radius:4px;}
+
+.modal-overlay{background:rgba(25,28,36,.48);backdrop-filter:blur(3px);}
+.modal{border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 50px rgba(20,24,35,.2);}
+.modal h2{color:#252832;font-size:17px;}
+.modal input,.modal select{border:1px solid #dfe2e8;border-radius:5px;}
+
+#toast{
+  background:#262932;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;
+  box-shadow:0 8px 28px rgba(18,22,32,.2);
+  font-size:12px;
+}
+
+#toast.toast-info,#toast.toast-info.toast-center{background:#315ab9;}
+#toast.toast-success{background:#21865f;}
+#toast.toast-error,#toast.toast-error.toast-center{background:#b73540;}
+#toast.toast-center{width:min(420px,calc(100vw - 32px));text-align:center;}
+
+#page-title{
+  padding:12px 16px;
+  border:0;
+  background:transparent;
+  color:#9296a0;
+  font-size:10px;
+}
+
+footer{display:none;}
+
+@media (max-width:760px){
+  header{padding:12px;gap:8px;}
+  header h1{flex:1 0 100%;font-size:17px;}
+  #month-label{min-width:118px;}
+  #syncbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px;}
+  #syncbar .status-group{grid-column:1/-1;margin:0;}
+  #btn-company-login{margin:0;}
+  #syncbar button{justify-self:start;}
+  .toolbar{gap:6px;padding:10px 12px;}
+  #toolbar-help{flex:1 0 100%;}
+  .toolbar button{min-height:34px;}
+  .legend{gap:8px 12px;padding:10px 12px;}
+  main{padding:12px;}
+  #admin-section{margin:6px 12px 12px;}
+}
+
+/* Sistema visivo Airtable */
+:root{
+  --f-bg:#fef3c7;--f-fg:#92400e;--f-border:#fde68a;
+  --cp-bg:#e0f2fe;--cp-fg:#0369a1;--cp-border:#bae6fd;
+  --m-bg:#ffe4e6;--m-fg:#be123c;--m-border:#fecdd3;
+  --c-bg:#ccfbf1;--c-fg:#0f766e;--c-border:#99f6e4;
+  --c-half-bg:#e6fffa;--c-half-fg:#115e59;--c-half-border:#b2f5ea;
+  --l-bg:#f1f5f9;--l-fg:#334155;--l-border:#cbd5e1;
+  --104-bg:#f3e8ff;--104-fg:#7e22ce;--104-border:#e9d5ff;
+  --rh-bg:#dcfce7;--rh-fg:#15803d;--rh-border:#bbf7d0;
+  --p-bg:#ffedd5;--p-fg:#c2410c;--p-border:#fed7aa;
+  --canvas:#f8fafc;--surface:#fff;--border:#e2e8f0;--border-strong:#cbd5e1;
+  --ink:#0f172a;--ink-muted:#64748b;--accent:#2563eb;--accent-hover:#1d4ed8;
+  --accent-light:#eff6ff;--accent-ring:rgba(37,99,235,.25);
+  --alert-yellow:#fef9c3;--alert-yellow-fg:#854d0e;
+  --alert-red:#fee2e2;--alert-red-fg:#991b1b;
+  --radius-sm:4px;--radius-md:6px;--radius-lg:8px;--radius-xl:12px;
+  --f-color:var(--f-bg);--cp-color:var(--cp-bg);--m-color:var(--m-bg);
+  --c-color:var(--c-bg);--c-half-color:var(--c-half-bg);--l-color:var(--l-bg);
+  --104-color:var(--104-bg);--rh-color:var(--rh-bg);--p-color:var(--p-bg);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--canvas);color:var(--ink);font-size:13px;-webkit-font-smoothing:antialiased;
+}
+header{
+  justify-content:space-between;background:var(--surface);color:var(--ink);
+  padding:10px 20px;gap:12px;border-bottom:1px solid var(--border);
+}
+.header-left{display:flex;align-items:center;gap:14px;flex:0 0 auto;}
+.brand-badge{
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  color:#fff;background:linear-gradient(135deg,#2563eb,#38bdf8);
+  border-radius:var(--radius-md);box-shadow:0 1px 3px rgba(37,99,235,.2);
+}
+header h1{margin:0;font-size:15px;font-weight:700;color:var(--ink);}
+.month-navigator{
+  display:inline-flex;align-items:center;gap:2px;padding:2px;
+  background:#f1f5f9;border:1px solid var(--border);border-radius:var(--radius-lg);
+}
+.month-navigator button{
+  width:28px;height:28px;min-height:28px;padding:0;border:0;background:transparent;
+  border-radius:var(--radius-md);color:#475569;font-size:16px;font-weight:700;
+}
+.month-navigator button:hover:not(:disabled){background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+#month-label{min-width:130px;text-align:center;padding:0 6px;color:var(--ink);font-size:13px;font-weight:600;}
+.month-lock-indicator{min-width:0;margin:0 2px;font-size:.95rem;}
+
+#syncbar{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0;
+  background:transparent;border:0;font-size:11px;
+}
+#syncbar.ok,#syncbar.err,#syncbar.loading,#syncbar.info{background:transparent;border-color:transparent;}
+#syncbar .status-group{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 8px;
+  background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-md);
+}
+#syncbar .status-label{color:#64748b;font-size:9px;font-weight:700;text-transform:uppercase;}
+#syncbar .status-message{color:#334155;font-weight:500;}
+#syncbar #data-updated{margin-left:2px;color:#94a3b8;font-size:10px;}
+#syncbar.ok .status-group{background:#f0fdf4;border-color:#bbf7d0;}
+#syncbar.err .status-group{background:#fff1f2;border-color:#fecdd3;}
+#syncbar.loading .status-group{background:#fefce8;border-color:#fde68a;}
+
+button{
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  min-height:30px;padding:5px 11px;border:1px solid var(--border);
+  border-radius:var(--radius-md);background:#fff;color:#334155;font-size:12px;font-weight:500;
+  transition:background .15s ease,border-color .15s ease,color .15s ease;
+}
+[hidden]{display:none !important;}
+button:hover:not(:disabled){background:#f8fafc;border-color:var(--border-strong);color:var(--ink);}
+button:focus-visible,td.daycell:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{
+  outline:2px solid var(--accent);outline-offset:1px;
+}
+button:disabled,button[aria-disabled="true"]{opacity:.5;background:#f1f5f9;color:#94a3b8;border-color:var(--border);}
+button.primary{background:var(--accent);border-color:#1d4ed8;color:#fff;font-weight:600;box-shadow:0 1px 2px rgba(37,99,235,.18);}
+button.primary:hover:not(:disabled){background:var(--accent-hover);border-color:#1e40af;color:#fff;}
+button.warn{background:#fff;color:#dc2626;border-color:#fecdd3;font-weight:600;}
+button.warn:hover:not(:disabled){background:#fff1f2;border-color:#fda4af;color:#b91c1c;}
+button.is-active{background:var(--accent-light);color:var(--accent);border-color:#bfdbfe;font-weight:600;}
+
+.toolbar{
+  justify-content:space-between;gap:12px;padding:8px 20px;background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+.toolbar-section{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.toolbar-hint{color:var(--ink-muted);font-size:11px;font-weight:500;}
+.toolbar-hint .hint-icon{flex-shrink:0;color:var(--accent);}
+.toolbar-codes{gap:4px;padding:3px 4px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-lg);}
+.toolbar-actions{gap:6px;margin-left:auto;}
+.status-btn{
+  display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:29px;min-height:29px;
+  padding:0 8px;border:1px solid transparent;border-radius:var(--radius-md);
+  font-size:11px;font-weight:700;user-select:none;
+}
+.status-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 2px 4px rgba(0,0,0,.06);filter:brightness(.96);}
+.status-btn.status-F{background:var(--f-bg);color:var(--f-fg);border-color:var(--f-border);}
+.status-btn.status-Cp{background:var(--cp-bg);color:var(--cp-fg);border-color:var(--cp-border);}
+.status-btn.status-M{background:var(--m-bg);color:var(--m-fg);border-color:var(--m-border);}
+.status-btn.status-C{background:var(--c-bg);color:var(--c-fg);border-color:var(--c-border);}
+.status-btn.status-Chalf{background:var(--c-half-bg);color:var(--c-half-fg);border-color:var(--c-half-border);}
+.status-btn.status-L{background:var(--l-bg);color:var(--l-fg);border-color:var(--l-border);}
+.status-btn.status-104{background:var(--104-bg);color:var(--104-fg);border-color:var(--104-border);}
+.status-btn.status-Rh{background:var(--rh-bg);color:var(--rh-fg);border-color:var(--rh-border);}
+.status-btn.status-P{background:var(--p-bg);color:var(--p-fg);border-color:var(--p-border);}
+
+.legend{gap:6px 10px;padding:8px 20px;background:var(--surface);border-bottom:1px solid var(--border);font-size:11px;}
+.legend span{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 8px;background:#f8fafc;
+  border:1px solid var(--border);border-radius:var(--radius-md);color:#475569;font-size:11px;font-weight:500;
+}
+.legend i{width:8px;height:8px;flex-shrink:0;border:1px solid rgba(0,0,0,.12);border-radius:50%;}
+
+main{padding:16px 20px;overflow-x:auto;}
+table{
+  width:100%;min-width:950px;border:1px solid var(--border);border-radius:var(--radius-lg);
+  border-collapse:separate;border-spacing:0;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+th,td{height:28px;padding:0;border:0;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:11px;text-align:center;}
+th:last-child,td:last-child{border-right:0;}
+tr:last-child td{border-bottom:0;}
+th{position:sticky;top:0;z-index:10;background:#f8fafc;color:#475569;font-size:11px;font-weight:600;box-shadow:0 1px 0 var(--border);}
+th.namecell,td.namecell{
+  position:sticky;left:0;z-index:5;min-width:185px;padding-left:12px;padding-right:8px;
+  border-right:2px solid var(--border-strong);background:#fff;text-align:left;font-size:12px;white-space:nowrap;
+}
+th.namecell{z-index:15;background:#f8fafc;color:#334155;font-size:10px;font-weight:700;text-transform:uppercase;}
+td.namecell strong{color:#1e293b;font-weight:600;}
+@media screen{td.daycell{width:28px;min-width:26px;}}
+td.daycell{cursor:pointer;user-select:none;font-size:11px;font-weight:700;transition:background-color .1s ease,box-shadow .1s ease;}
+td.daycell:hover:not(.is-locked){box-shadow:inset 0 0 0 2px var(--accent);}
+td.daycell.is-locked{cursor:not-allowed !important;opacity:.65;}
+td.daycell.selected{position:relative;z-index:4;outline:2px solid var(--accent) !important;outline-offset:-2px;}
+td.weekend,th.weekend,td.holiday,th.holiday{background:var(--nonworking-bg);color:var(--nonworking-fg);}
+td.status-F{background:var(--f-bg) !important;color:var(--f-fg) !important;}
+td.status-Cp{background:var(--cp-bg) !important;color:var(--cp-fg) !important;}
+td.status-M{background:var(--m-bg) !important;color:var(--m-fg) !important;}
+td.status-C{background:var(--c-bg) !important;color:var(--c-fg) !important;}
+td.status-Chalf{background:var(--c-half-bg) !important;color:var(--c-half-fg) !important;}
+td.status-L{background:var(--l-bg) !important;color:var(--l-fg) !important;}
+td.status-104{background:var(--104-bg) !important;color:var(--104-fg) !important;}
+td.status-Rh{background:var(--rh-bg) !important;color:var(--rh-fg) !important;}
+td.status-P{background:var(--p-bg) !important;color:var(--p-fg) !important;}
+tr.group-row td{
+  position:sticky;left:0;height:27px;padding-left:12px;border-top:2px solid var(--border-strong);
+  border-bottom:1px solid var(--border);background:#f1f5f9;color:#1e293b;font-size:11px;
+  font-weight:700;text-align:left;text-transform:uppercase;
+}
+tr.spacer-row td{height:10px;border-right:0;border-left:0;border-bottom:1px solid var(--border);background:var(--canvas);}
+tr.absence-summary-row td{height:28px;background:#f8fafc;color:#334155;font-size:11px;font-weight:700;}
+tr.absence-summary-row td.namecell{background:#eef2f6;color:#0f172a;font-weight:700;}
+tr.absence-summary-row td.weekend,tr.absence-summary-row td.holiday{background:var(--nonworking-bg);color:var(--nonworking-fg);}
+td.alert-yellow{background:var(--alert-yellow) !important;color:var(--alert-yellow-fg) !important;font-weight:700;}
+td.alert-red{background:var(--alert-red) !important;color:var(--alert-red-fg) !important;font-weight:700;}
+th.riepilogocell,td.riepilogocell{
+  width:160px;min-width:160px;max-width:220px;padding:2px 8px;background:#fafbfc;color:#475569;
+  font-size:11px;font-weight:500;line-height:1.35;text-align:left;white-space:normal;
+}
+td.riepilogocell .riep-item{
+  display:inline-block;margin:1px 3px 1px 0;padding:1px 5px;border-radius:var(--radius-sm);
+  background:#eef2f6;color:#334155;font-size:10px;font-weight:600;
+}
+td.riepilogocell .riep-empty{color:#cbd5e1;font-weight:400;}
+.tag-badge{display:inline-block;margin-left:5px;padding:1px 5px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:#e2e8f0;color:#475569;font-size:10px;font-weight:600;}
+
+#admin-section{max-width:none;margin:12px 20px 20px;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.02);overflow:hidden;}
+#admin-section summary{padding:10px 16px;background:#fafbfc;color:#1e293b;font-size:12px;font-weight:600;user-select:none;}
+#admin-section summary:hover{background:#f1f5f9;}
+#admin-section .admin-body{gap:12px;padding:14px 16px;border-top:1px solid var(--border);background:var(--surface);}
+#admin-section .admin-body .admin-toolbar{gap:6px;}
+#admin-section .admin-body .admin-toolbar button{padding:5px 10px;font-size:11px;}
+.admin-status-badge{padding:2px 8px;border:1px solid #dbeafe;border-radius:var(--radius-sm);background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:600;}
+.modal-overlay{background:rgba(15,23,42,.45);backdrop-filter:blur(4px);}
+.modal{width:min(480px,92vw);max-width:92vw;padding:24px;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--surface);box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.05);}
+.modal h2{margin:0 0 12px;color:var(--ink);font-size:16px;font-weight:700;}
+.modal p{margin:0 0 12px;color:var(--ink-muted);font-size:12px;line-height:1.45;}
+.modal label{margin:12px 0 5px;color:#334155;font-size:12px;font-weight:600;}
+.modal input,.modal select{padding:7px 10px;border:1px solid var(--border-strong);border-radius:var(--radius-md);background:#fff;color:var(--ink);font-size:13px;}
+.modal input:focus,.modal select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-ring);}
+.modal .actions{gap:8px;margin-top:20px;}
+#toast{background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);font-size:12px;font-weight:500;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);}
+#toast.toast-info{background:#2563eb;}
+#toast.toast-success{background:#059669;}
+#toast.toast-error{background:#dc2626;}
+#toast.toast-center{padding:14px 24px;border-radius:var(--radius-xl);font-size:14px;}
+#page-title{padding:12px 20px;border-top:1px solid var(--border);background:var(--surface);color:#94a3b8;font-size:11px;font-weight:500;}
+
+@media (max-width:768px){
+  header{padding:10px 14px;}
+  .header-left{width:100%;justify-content:space-between;gap:8px;}
+  header h1{flex:1 1 auto;font-size:14px;}
+  #month-label{min-width:112px;}
+  #syncbar{width:100%;justify-content:flex-start;}
+  #btn-company-login{margin-left:auto;}
+  .toolbar{justify-content:flex-start;padding:8px 14px;}
+  .toolbar-hint{width:100%;}
+  .toolbar-codes{display:grid;width:100%;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;padding:3px;}
+  .toolbar-codes .status-btn{width:100%;min-width:0;padding:0 1px;font-size:10px;}
+  .toolbar-actions{width:100%;justify-content:flex-end;}
+  main{padding:10px 14px;}
+  #admin-section{margin:10px 14px;}
+}
+
 @media print{
   @page{
     size:A4 landscape;
@@ -189,6 +657,16 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
     background:#fff;
     font-size:9px;
     margin:0;
+  }
+
+  th.weekend,
+  td.weekend,
+  th.holiday,
+  td.holiday{
+    background-color:var(--nonworking-bg) !important;
+    color:var(--nonworking-fg) !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
   }
 
   main{
@@ -277,6 +755,23 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
     margin:0 1px 0 0;
   }
 
+  body.print-absence-mode th.riepilogocell,
+  body.print-absence-mode td.riepilogocell{
+    display:none !important;
+  }
+
+  body.print-absence-mode #grid{
+    height:180mm !important;
+  }
+
+  body:not(.print-absence-mode) #grid{
+    height:180mm !important;
+  }
+
+  body.print-absence-mode .tag-badge{
+    display:none !important;
+  }
+
   tr.spacer-row td{
     height:3px !important;
     padding:0 !important;
@@ -309,11 +804,22 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
 <div id="toast" role="alert" aria-live="assertive" aria-atomic="true" aria-hidden="true"></div>
 
 <header>
-  <h1>Planning Ferie e Assenze</h1>
-  <button id="btn-prev-month" aria-label="Mese precedente">&laquo;</button>
-  <span id="month-label"></span>
-  <span id="monthLockIndicator" class="month-lock-indicator" aria-live="polite" title="Mese sbloccato"></span>
-  <button id="btn-next-month" aria-label="Mese successivo">&raquo;</button>
+  <div class="header-left">
+    <div class="brand-badge" aria-hidden="true" title="Planning ferie e assenze">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+        <path d="M3 9h18"></path>
+        <path d="M9 21V9"></path>
+      </svg>
+    </div>
+    <h1>Planning Ferie e Assenze</h1>
+    <div class="month-navigator">
+      <button id="btn-prev-month" aria-label="Mese precedente" title="Mese precedente">&lsaquo;</button>
+      <span id="month-label"></span>
+      <span id="monthLockIndicator" class="month-lock-indicator" aria-live="polite" title="Mese sbloccato"></span>
+      <button id="btn-next-month" aria-label="Mese successivo" title="Mese successivo">&rsaquo;</button>
+    </div>
+  </div>
   <div id="syncbar">
     <span class="status-group">
       <span class="status-label">Sessione:</span>
@@ -331,32 +837,43 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
 </header>
 
 <div class="toolbar">
-  <span id="toolbar-help" role="status" aria-live="polite">Seleziona celle (click o trascina), poi assegna:</span>
-  <button class="status-btn status-F" data-code="F" title="Ferie" aria-label="Assegna ferie">F</button>
-  <button class="status-btn status-Cp" data-code="Cp" title="Congedo parentale" aria-label="Assegna congedo parentale">Cp</button>
-  <button class="status-btn status-M" data-code="M" title="Malattia" aria-label="Assegna malattia">M</button>
-  <button class="status-btn status-C" data-code="C" title="Corso" aria-label="Assegna corso">C</button>
-  <button class="status-btn status-Chalf" data-code="C½" title="Corso mezza giornata" aria-label="Assegna corso mezza giornata">C½</button>
-  <button class="status-btn status-L" data-code="L" title="Lavorativo sabato" aria-label="Assegna lavorativo sabato">L</button>
-  <button class="status-btn status-104" data-code="104" title="Legge 104" aria-label="Assegna legge 104">104</button>
-  <button class="status-btn status-Rh" data-code="Rh" title="Recupero ore" aria-label="Assegna recupero ore">Rh</button>
-  <button class="status-btn status-P" data-code="P" title="Permesso" aria-label="Assegna permesso">P</button>
-  <button id="btn-clear-cell" title="Cancella il codice dalle celle selezionate">Cancella</button>
-  <button id="btn-deselect">Annulla selezione</button>
-  <button id="btn-save-my-row" class="primary">Salva modifiche</button>
+  <div class="toolbar-section toolbar-hint">
+    <svg class="hint-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+    <span id="toolbar-help" role="status" aria-live="polite">Seleziona celle (click o trascina), poi assegna:</span>
+  </div>
+  <div class="toolbar-section toolbar-codes">
+    <button class="status-btn status-F" data-code="F" title="Ferie" aria-label="Assegna ferie">F</button>
+    <button class="status-btn status-Cp" data-code="Cp" title="Congedo parentale" aria-label="Assegna congedo parentale">Cp</button>
+    <button class="status-btn status-M" data-code="M" title="Malattia" aria-label="Assegna malattia">M</button>
+    <button class="status-btn status-C" data-code="C" title="Corso" aria-label="Assegna corso">C</button>
+    <button class="status-btn status-Chalf" data-code="C½" title="Corso mezza giornata" aria-label="Assegna corso mezza giornata">C½</button>
+    <button class="status-btn status-L" data-code="L" title="Lavorativo sabato" aria-label="Assegna lavorativo sabato">L</button>
+    <button class="status-btn status-104" data-code="104" title="Legge 104" aria-label="Assegna legge 104">104</button>
+    <button class="status-btn status-Rh" data-code="Rh" title="Recupero ore" aria-label="Assegna recupero ore">Rh</button>
+    <button class="status-btn status-P" data-code="P" title="Permesso" aria-label="Assegna permesso">P</button>
+  </div>
+  <div class="toolbar-section toolbar-actions">
+    <button id="btn-clear-cell" title="Cancella il codice dalle celle selezionate">Cancella</button>
+    <button id="btn-deselect">Annulla selezione</button>
+    <button id="btn-save-my-row" class="primary">Salva modifiche</button>
+  </div>
 </div>
 
 <div class="legend">
-  <span><i style="background:var(--f-color)"></i> F - Ferie</span>
-  <span><i style="background:var(--cp-color)"></i> Cp - Congedo parentale</span>
-  <span><i style="background:var(--m-color)"></i> M - Malattia</span>
-  <span><i style="background:var(--c-color)"></i> C - corso</span>
-  <span><i style="background:var(--c-half-color)"></i> C½ - corso mezza giornata</span>
-  <span><i style="background:var(--l-color)"></i> L - Lavorativo sabato</span>
-  <span><i style="background:var(--104-color)"></i> 104 - Legge 104</span>
-  <span><i style="background:var(--rh-color)"></i> Rh - Recupero ore</span>
-  <span><i style="background:var(--p-color)"></i> P - Permesso</span>
-  <span><i style="background:#f5f5f5"></i> Cancella - Elimina il dato inserito</span>
+  <span><i style="background:var(--f-bg);border-color:var(--f-border)"></i> F - Ferie</span>
+  <span><i style="background:var(--cp-bg);border-color:var(--cp-border)"></i> Cp - Congedo parentale</span>
+  <span><i style="background:var(--m-bg);border-color:var(--m-border)"></i> M - Malattia</span>
+  <span><i style="background:var(--c-bg);border-color:var(--c-border)"></i> C - Corso</span>
+  <span><i style="background:var(--c-half-bg);border-color:var(--c-half-border)"></i> C½ - Corso mezza giornata</span>
+  <span><i style="background:var(--l-bg);border-color:var(--l-border)"></i> L - Sabato lavorativo</span>
+  <span><i style="background:var(--104-bg);border-color:var(--104-border)"></i> 104 - Legge 104</span>
+  <span><i style="background:var(--rh-bg);border-color:var(--rh-border)"></i> Rh - Recupero ore</span>
+  <span><i style="background:var(--p-bg);border-color:var(--p-border)"></i> P - Permesso</span>
+  <span><i style="background:#f1f5f9;border-color:#cbd5e1"></i> Cancella - Elimina dato</span>
   
 </div>
 
@@ -371,7 +888,7 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
 <footer>  .   .   .   . Have a good one :D </footer>
 
 <!-- ==================== STRUMENTI DI AMMINISTRAZIONE ==================== -->
-<details id="admin-section">
+<details id="admin-section" hidden aria-hidden="true">
   <summary id="admin-summary">
     <span>Strumenti di amministrazione</span>
     <span id="admin-status-badge" class="admin-status-badge">Ruolo: admin</span>
@@ -386,6 +903,8 @@ footer{padding:8px 8px;font-size:7px;color:#607d8b;align-items: center;}
       <button id="btn-import">Importa backup</button>
       <input type="file" id="file-import" accept=".json" style="display:none">
       <button id="btn-print">Stampa/PDF</button>
+      <button id="btn-print-absence">PDF Assenze</button>
+      <button id="btn-copy-excel" title="Copia negli appunti per Google Fogli o Excel">Copia Mese x Excel</button>
       <button id="btn-parttime">Part Time e gestione etichette</button>
       <button id="btn-absence-mgmt">Gestione Assenze</button>
           <button id="btn-lock-month" aria-label="Blocca o sblocca il mese">Blocco mese</button>
@@ -765,7 +1284,7 @@ function updateCellActionControls(){
         : role === "user"
           ? "Puoi modificare solo la tua riga."
           : "Nessuna cella modificabile selezionata.";
-  toolbarHelp.textContent = canEditSelection ? roleHelp : roleHelp + " " + editDisabledReason;
+  toolbarHelp.textContent = canEditSelection ? roleHelp : editDisabledReason;
   document.querySelectorAll(".status-btn").forEach(btn => {
     const disabled = !canEditSelection;
     if (!btn.dataset.baseTitle) btn.dataset.baseTitle = btn.title;
@@ -922,6 +1441,8 @@ function renderGrid(){
   for (let d=1; d<=nDays; d++){
     const dt = new Date(currentDate.getFullYear(), currentDate.getMonth(), d);
     const th = document.createElement("th");
+    if (isWeekendDay(dt)) th.classList.add("weekend");
+    if (isSpecialExcluded(dt)) th.classList.add("holiday");
     const dayLetter = document.createElement("span");
     dayLetter.style.fontWeight = "normal";
     dayLetter.textContent = DAY_LETTERS[dt.getDay()];
@@ -1147,6 +1668,9 @@ function renderAbsenceRow(body, title, sums, nDays, groupLimits){
 
   for (let d=1; d<=nDays; d++){
     const td = document.createElement("td");
+    const dt = new Date(currentDate.getFullYear(), currentDate.getMonth(), d);
+    if (isWeekendDay(dt)) td.classList.add("weekend");
+    if (isSpecialExcluded(dt)) td.classList.add("holiday");
     const val = sums[d];
     const formattedVal = Number(val).toFixed(1);
     td.textContent = val > 0  ? (Number.isInteger(val) ? String(val) : formattedVal)
@@ -1513,6 +2037,102 @@ document.getElementById("file-import").addEventListener("change", (e) => {
   e.target.value = "";
 });
 document.getElementById("btn-print").addEventListener("click", () => window.print());
+
+function printAbsencePdf(){
+  if (!canUseAdminTools()) return;
+
+  const ymLabel = MONTH_NAMES[currentDate.getMonth()] + " " + currentDate.getFullYear();
+  const originalTitle = document.title;
+  const printHeader = document.getElementById("print-header");
+  const originalHeaderHtml = printHeader ? printHeader.innerHTML : "";
+
+  document.body.classList.add("print-absence-mode");
+  document.title = "PDF Assenze " + ymLabel;
+  if (printHeader) printHeader.textContent = "PDF Assenze " + ymLabel;
+
+  const changedCells = [];
+  document.querySelectorAll("td.daycell").forEach(td => {
+    const code = td.textContent.trim();
+    if (ABSENCE_CODES.includes(code)){
+      changedCells.push({ el: td, origText: code });
+      td.textContent = "A";
+    }
+  });
+
+  let restored = false;
+  const restoreOriginal = () => {
+    if (restored) return;
+    restored = true;
+    changedCells.forEach(item => { item.el.textContent = item.origText; });
+    if (printHeader) printHeader.innerHTML = originalHeaderHtml;
+    document.title = originalTitle;
+    document.body.classList.remove("print-absence-mode");
+    window.removeEventListener("afterprint", restoreOriginal);
+  };
+
+  window.addEventListener("afterprint", restoreOriginal);
+  window.print();
+  setTimeout(restoreOriginal, 1000);
+}
+
+async function copyMonthForExcel(){
+  if (!canUseAdminTools()) return;
+
+  const table = document.getElementById("grid");
+  if (!table) return;
+
+  const rows = [];
+  const headTr = table.querySelector("thead tr");
+  if (headTr){
+    const headCells = [];
+    headTr.querySelectorAll("th").forEach(th => {
+      headCells.push(th.innerText.replace(/\r?\n+/g, " ").trim());
+    });
+    rows.push(headCells.join("\t"));
+  }
+
+  table.querySelectorAll("tbody tr").forEach(tr => {
+    if (tr.classList.contains("spacer-row")) return;
+    const cells = [];
+    tr.querySelectorAll("th, td").forEach(td => {
+      cells.push(td.innerText.replace(/\r?\n+/g, " ").trim());
+    });
+    rows.push(cells.join("\t"));
+  });
+
+  const tsvData = rows.join("\r\n");
+  try {
+    if (navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(tsvData);
+      showToast("Tabella copiata! Incolla (Ctrl+V) su Google Fogli.", "success", 3000, true);
+    } else {
+      fallbackClipboardCopy(tsvData);
+    }
+  } catch (error){
+    fallbackClipboardCopy(tsvData);
+  }
+}
+
+function fallbackClipboardCopy(text){
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.style.top = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    if (!document.execCommand("copy")) throw new Error("Copia non riuscita");
+    showToast("Tabella copiata! Incolla (Ctrl+V) su Google Fogli.", "success", 3000, true);
+  } catch (error){
+    alert("Impossibile accedere agli appunti del browser.");
+  }
+  document.body.removeChild(textarea);
+}
+
+document.getElementById("btn-print-absence").addEventListener("click", printAbsencePdf);
+document.getElementById("btn-copy-excel").addEventListener("click", copyMonthForExcel);
 
 /* =====================================================================
    SINCRONIZZAZIONE BACKEND
@@ -2025,6 +2645,7 @@ function initApp(){
   updateAuthControls();
   updateAuthStatus("Verifica sessione in corso...", "loading");
   updateDataStatus("In attesa della sessione", "info");
+  showToast("Attendere la risposta del server...", "info", 0, true);
   fetchSession();
 }
 
